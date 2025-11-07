@@ -19,10 +19,10 @@ export const Button: React.FC<ButtonProps> = ({
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
   
   const variantClasses = {
-    primary: 'bg-celebrity-purple text-white hover:bg-celebrity-purple-dark focus:ring-celebrity-purple',
+    primary: 'bg-celebrity-purple text-[#1E1E1E] hover:bg-celebrity-purple-dark focus:ring-celebrity-purple',
     secondary: 'bg-celebrity-pink text-white hover:bg-celebrity-purple focus:ring-celebrity-pink',
-    outline: 'border-2 border-celebrity-purple text-celebrity-purple hover:bg-celebrity-purple hover:text-white focus:ring-celebrity-purple',
-    ghost: 'text-celebrity-gray-600 hover:bg-celebrity-gray-100 hover:text-celebrity-gray-900 focus:ring-celebrity-gray-500',
+    outline: 'border-2 border-celebrity-purple text-[#1E1E1E] hover:bg-celebrity-purple hover:text-white focus:ring-celebrity-purple',
+    ghost: 'text-[#1E1E1E] hover:bg-celebrity-gray-100 hover:text-celebrity-gray-900 focus:ring-celebrity-gray-500',
   };
   
   const sizeClasses = {

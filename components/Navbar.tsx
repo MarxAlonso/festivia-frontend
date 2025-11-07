@@ -11,7 +11,7 @@ export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50">
+    <nav className="bg-[#FFD8C2] shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -26,13 +26,13 @@ export const Navbar: React.FC = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-celebrity-gray-700 hover:text-celebrity-purple transition-colors">
+            <Link href="/" className="text-[#1E1E1E] hover:text-celebrity-purple transition-colors">
               Inicio
             </Link>
-            <Link href="/templates" className="text-celebrity-gray-700 hover:text-celebrity-purple transition-colors">
+            <Link href="/templates" className="text-[#1E1E1E] hover:text-celebrity-purple transition-colors">
               Plantillas
             </Link>
-            <Link href="/como-funciona" className="text-celebrity-gray-700 hover:text-celebrity-purple transition-colors">
+            <Link href="/como-funciona" className="text-[#1E1E1E] hover:text-celebrity-purple transition-colors">
               Cómo Funciona
             </Link>
             
