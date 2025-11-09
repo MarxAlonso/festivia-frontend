@@ -139,11 +139,8 @@ export const useInvitationCreator = (): UseInvitationCreatorReturn => {
         customizations: designData.customizations || {}
       };
 
-      // Actualizar el diseño personalizado en formato JSONB
-      const updatedInvitation = await invitationService.updateInvitation(invitation.id, {
-        customDesign,
-        status: 'draft'
-      });
+      // Actualizar el diseño personalizado en endpoint dedicado
+      const updatedInvitation = await invitationService.updateInvitationDesign(invitation.id, customDesign);
       
       setInvitation(updatedInvitation);
       return updatedInvitation;

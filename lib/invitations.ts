@@ -82,7 +82,7 @@ export interface InvitationDesignData {
 export const invitationService = {
   // Obtener todas las invitaciones del usuario
   getUserInvitations: async (): Promise<Invitation[]> => {
-    const response = await api.get('/invitations');
+    const response = await api.get('/invitations/mine');
     return response.data;
   },
 
@@ -107,6 +107,12 @@ export const invitationService = {
   // Actualizar invitación
   updateInvitation: async (id: string, data: UpdateInvitationDto): Promise<Invitation> => {
     const response = await api.patch(`/invitations/${id}`, data);
+    return response.data;
+  },
+
+  // Actualizar diseño de invitación (endpoint protegido para organizer)
+  updateInvitationDesign: async (id: string, customDesign: Record<string, any>): Promise<Invitation> => {
+    const response = await api.patch(`/invitations/${id}/design`, { customDesign });
     return response.data;
   },
 

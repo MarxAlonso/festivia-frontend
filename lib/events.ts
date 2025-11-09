@@ -21,7 +21,7 @@ export interface Event {
   description?: string;
   type: EventType;
   status: EventStatus;
-  eventDate: Date;
+  eventDate: string;
   location?: string;
   address?: {
     street?: string;
@@ -41,7 +41,7 @@ export interface CreateEventDto {
   title: string;
   description?: string;
   type: EventType;
-  eventDate: Date;
+  eventDate: string;
   location?: string;
   address?: Event['address'];
   settings?: Record<string, any>;
@@ -55,7 +55,7 @@ export interface UpdateEventDto extends Partial<CreateEventDto> {
 export const eventService = {
   // Obtener todos los eventos del usuario
   getUserEvents: async (): Promise<Event[]> => {
-    const response = await api.get('/events');
+    const response = await api.get('/events/mine');
     return response.data;
   },
 
