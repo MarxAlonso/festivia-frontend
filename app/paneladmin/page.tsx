@@ -3,33 +3,18 @@
 import React from 'react';
 import Link from 'next/link';
 import { SidebarAdmin } from '@/components/SidebarAdmin';
+import { HeaderAdmin } from '@/components/uiPanelAdmin/HeaderAdmin';
 import { Button } from '@/components/ui/Button';
 import { Users, Shield, Settings, Database, BarChart3, UserCog, ClipboardList } from 'lucide-react';
 
 export default function PanelAdminPage() {
   return (
-    <div className="flex h-screen bg-celebrity-gray-50">
+    <div className="flex h-screen bg-[#F6E7E4]">
       <SidebarAdmin />
 
       <div className="flex-1 overflow-auto">
         {/* Header */}
-        <div className="bg-white border-b border-celebrity-gray-200 px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold font-serif text-celebrity-gray-900">
-                Panel de Administración
-              </h1>
-              <p className="text-celebrity-gray-600 mt-1">
-                Gestiona usuarios, permisos y configuración del sistema
-              </p>
-            </div>
-            {/*<Link href="/panel">
-              <Button size="lg" className="celebrity-gradient text-white hover:opacity-90">
-                Volver al Panel de Usuario
-              </Button>
-            </Link>*/}
-          </div>
-        </div>
+        <HeaderAdmin />
 
         {/* Stats Cards */}
         <div className="px-8 py-6">
