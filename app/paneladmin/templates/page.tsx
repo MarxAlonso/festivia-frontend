@@ -68,6 +68,7 @@ export default function AdminTemplatesPage() {
               { key: 'body', text: '' },
               { key: 'footer', text: '' },
             ],
+            elements: [],
           },
         ],
       },

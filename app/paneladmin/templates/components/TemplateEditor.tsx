@@ -25,6 +25,58 @@ export function TemplateEditor({ form, setForm, editingId, saving, onCancel, onS
     fontFamily: form.design.fonts.body,
   }), [form]);
 
+  const addElement = (pageIdx: number, type: 'text' | 'image' | 'shape') => {
+    setForm((p) => {
+      const pages = [...(p.design.pages || [])];
+      const page = { ...(pages[pageIdx] || {}) } as any;
+      const elements = [...(page.elements || [])];
+      const id = `el_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+      if (type === 'text') {
+        elements.push({ id, type, content: 'Nuevo texto', x: 20, y: 30, zIndex: 1, style: { color: '#1f2937', fontFamily: p.design.fonts.body, fontSize: '16px' } });
+      } else if (type === 'image') {
+        elements.push({ id, type, src: 'https://via.placeholder.com/150', x: 40, y: 60, width: 120, height: 80, zIndex: 1, style: { objectFit: 'cover' } });
+      } else {
+        elements.push({ id, type, x: 10, y: 10, width: 80, height: 40, zIndex: 0, style: { background: '#e5e7eb' } });
+      }
+      pages[pageIdx] = { ...page, elements };
+      return { ...p, design: { ...p.design, pages } };
+    });
+  };
+
+  const updateElement = (pageIdx: number, elId: string, updates: any) => {
+    setForm((p) => {
+      const pages = [...(p.design.pages || [])];
+      const page = { ...(pages[pageIdx] || {}) } as any;
+      const elements = [...(page.elements || [])];
+      const idx = elements.findIndex((e) => e.id === elId);
+      if (idx >= 0) elements[idx] = { ...elements[idx], ...updates };
+      pages[pageIdx] = { ...page, elements };
+      return { ...p, design: { ...p.design, pages } };
+    });
+  };
+
+  const updateElementStyle = (pageIdx: number, elId: string, styleUpdates: Record<string, string>) => {
+    setForm((p) => {
+      const pages = [...(p.design.pages || [])];
+      const page = { ...(pages[pageIdx] || {}) } as any;
+      const elements = [...(page.elements || [])];
+      const idx = elements.findIndex((e) => e.id === elId);
+      if (idx >= 0) elements[idx] = { ...elements[idx], style: { ...(elements[idx].style || {}), ...styleUpdates } };
+      pages[pageIdx] = { ...page, elements };
+      return { ...p, design: { ...p.design, pages } };
+    });
+  };
+
+  const removeElement = (pageIdx: number, elId: string) => {
+    setForm((p) => {
+      const pages = [...(p.design.pages || [])];
+      const page = { ...(pages[pageIdx] || {}) } as any;
+      const elements = (page.elements || []).filter((e: any) => e.id !== elId);
+      pages[pageIdx] = { ...page, elements };
+      return { ...p, design: { ...p.design, pages } };
+    });
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
       {/* Formulario de creación/edición */}
@@ -136,11 +188,38 @@ export function TemplateEditor({ form, setForm, editingId, saving, onCancel, onS
                       {/* Previsualización de la página */}
                       <div className="rounded border border-celebrity-gray-200 p-3">
                         <div className="mx-auto" style={{ width: 360, height: 640, borderRadius: 12, overflow: 'hidden', position: 'relative', ...style }}>
-                          <div className="absolute inset-0 p-4 flex flex-col justify-between">
+                          <div className="absolute inset-0 p-4 flex flex-col justify-between pointer-events-none">
                             <div className="text-xl font-serif font-bold">{header}</div>
                             <div className="text-sm">{body}</div>
                             <div className="text-xs opacity-80">{footer}</div>
                           </div>
+                          {(page.elements || []).map((el) => {
+                            const baseStyle: React.CSSProperties = {
+                              position: 'absolute',
+                              left: el.x,
+                              top: el.y,
+                              width: el.width,
+                              height: el.height,
+                              zIndex: el.zIndex || 1,
+                              transform: `rotate(${el.rotation || 0}deg)`,
+                              ...((el.style || {}) as any),
+                            };
+                            if (el.type === 'text') {
+                              return (
+                                <div key={el.id} style={baseStyle}>
+                                  {el.content}
+                                </div>
+                              );
+                            }
+                            if (el.type === 'image') {
+                              return (
+                                <img key={el.id} src={el.src || ''} alt="" style={{ ...baseStyle, objectFit: (el.style?.objectFit as any) || 'cover' }} />
+                              );
+                            }
+                            return (
+                              <div key={el.id} style={{ ...baseStyle, background: el.style?.background || '#e5e7eb' }} />
+                            );
+                          })}
                         </div>
                       </div>
                       {/* Controles de la página */}
@@ -168,6 +247,79 @@ export function TemplateEditor({ form, setForm, editingId, saving, onCancel, onS
                           <div className="md:col-span-2">
                             <label className="block text-xs font-medium text-celebrity-gray-700 mb-2">Footer</label>
                             <input className="w-full px-3 py-2 border border-celebrity-gray-300 rounded" value={footer} onChange={(e) => updatePageSectionText(idx, 'footer', e.target.value)} />
+                          </div>
+                          <div className="md:col-span-2">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="block text-xs font-medium text-celebrity-gray-700">Elementos</span>
+                              <div className="flex gap-2">
+                                <Button variant="outline" onClick={() => addElement(idx, 'text')}>Agregar texto</Button>
+                                <Button variant="outline" onClick={() => addElement(idx, 'image')}>Agregar imagen</Button>
+                              </div>
+                            </div>
+                            <div className="space-y-3">
+                              {(page.elements || []).map((el) => (
+                                <div key={el.id} className="rounded border border-celebrity-gray-200 p-3">
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <div className="col-span-2 text-xs font-semibold">{el.type.toUpperCase()} • {el.id}</div>
+                                    {el.type === 'text' && (
+                                      <div className="col-span-2">
+                                        <label className="block text-xs font-medium mb-1">Texto</label>
+                                        <input className="w-full px-3 py-2 border rounded" value={el.content || ''} onChange={(e) => updateElement(idx, el.id, { content: e.target.value })} />
+                                      </div>
+                                    )}
+                                    {el.type === 'image' && (
+                                      <div className="col-span-2">
+                                        <label className="block text-xs font-medium mb-1">URL Imagen</label>
+                                        <input className="w-full px-3 py-2 border rounded" value={el.src || ''} onChange={(e) => updateElement(idx, el.id, { src: e.target.value })} />
+                                      </div>
+                                    )}
+                                    <div>
+                                      <label className="block text-xs font-medium mb-1">X</label>
+                                      <input type="number" className="w-full px-3 py-2 border rounded" value={el.x || 0} onChange={(e) => updateElement(idx, el.id, { x: Number(e.target.value) })} />
+                                    </div>
+                                    <div>
+                                      <label className="block text-xs font-medium mb-1">Y</label>
+                                      <input type="number" className="w-full px-3 py-2 border rounded" value={el.y || 0} onChange={(e) => updateElement(idx, el.id, { y: Number(e.target.value) })} />
+                                    </div>
+                                    <div>
+                                      <label className="block text-xs font-medium mb-1">Ancho</label>
+                                      <input type="number" className="w-full px-3 py-2 border rounded" value={el.width || 0} onChange={(e) => updateElement(idx, el.id, { width: Number(e.target.value) })} />
+                                    </div>
+                                    <div>
+                                      <label className="block text-xs font-medium mb-1">Alto</label>
+                                      <input type="number" className="w-full px-3 py-2 border rounded" value={el.height || 0} onChange={(e) => updateElement(idx, el.id, { height: Number(e.target.value) })} />
+                                    </div>
+                                    <div>
+                                      <label className="block text-xs font-medium mb-1">Rotación</label>
+                                      <input type="number" className="w-full px-3 py-2 border rounded" value={el.rotation || 0} onChange={(e) => updateElement(idx, el.id, { rotation: Number(e.target.value) })} />
+                                    </div>
+                                    <div>
+                                      <label className="block text-xs font-medium mb-1">Z-Index</label>
+                                      <input type="number" className="w-full px-3 py-2 border rounded" value={el.zIndex || 1} onChange={(e) => updateElement(idx, el.id, { zIndex: Number(e.target.value) })} />
+                                    </div>
+                                    <div>
+                                      <label className="block text-xs font-medium mb-1">Color</label>
+                                      <input type="color" className="w-full h-10 rounded border" value={(el.style?.color as string) || '#000000'} onChange={(e) => updateElementStyle(idx, el.id, { color: e.target.value })} />
+                                    </div>
+                                    <div>
+                                      <label className="block text-xs font-medium mb-1">Fuente</label>
+                                      <select className="w-full px-3 py-2 border rounded" value={(el.style?.fontFamily as string) || form.design.fonts.body} onChange={(e) => updateElementStyle(idx, el.id, { fontFamily: e.target.value })}>
+                                        <option value="serif">Serif</option>
+                                        <option value="sans-serif">Sans Serif</option>
+                                        <option value="monospace">Monospace</option>
+                                      </select>
+                                    </div>
+                                    <div>
+                                      <label className="block text-xs font-medium mb-1">Tamaño</label>
+                                      <input className="w-full px-3 py-2 border rounded" value={(el.style?.fontSize as string) || '16px'} onChange={(e) => updateElementStyle(idx, el.id, { fontSize: e.target.value })} />
+                                    </div>
+                                    <div className="col-span-2 flex justify-end gap-2">
+                                      <Button variant="outline" onClick={() => removeElement(idx, el.id)}>Eliminar</Button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                         <div className="mt-3 flex justify-end">
