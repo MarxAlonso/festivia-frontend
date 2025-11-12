@@ -9,6 +9,7 @@ import { invitationService, Invitation } from '@/lib/invitations';
 import { templateService, Template } from '@/lib/templates';
 import { eventService, Event } from '@/lib/events';
 import { Plus, Save, Trash2, Eye } from 'lucide-react';
+import { EditorHeader } from './components/EditorHeader';
 
 type BackgroundType = 'image' | 'color';
 
@@ -239,19 +240,7 @@ export default function InvitationEditorPage() {
       <div className="flex h-screen bg-celebrity-gray-50">
         <Sidebar />
         <div className="flex-1 overflow-auto">
-          <div className="bg-white border-b border-celebrity-gray-200 px-8 py-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold font-serif text-celebrity-gray-900">Editar Invitación</h1>
-                <p className="text-celebrity-gray-600 mt-1">Personaliza las páginas y elementos de tu diseño</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button onClick={handleSave} loading={saving} className="celebrity-gradient text-white">
-                  <Save className="w-4 h-4 mr-2" /> Guardar diseño
-                </Button>
-              </div>
-            </div>
-          </div>
+          <EditorHeader saving={saving} onSave={handleSave} />
 
           <div className="px-8 py-6 grid grid-cols-1 xl:grid-cols-3 gap-6">
             {/* Controles */}
