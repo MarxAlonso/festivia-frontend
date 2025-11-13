@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { invitationService, Invitation } from '@/lib/invitations';
 import { eventService, Event } from '@/lib/events';
 import { Sparkles, Eye, TrendingUp } from 'lucide-react';
+import Image from 'next/image';
 
 type ColorKey = 'primary' | 'secondary' | 'accent' | 'text';
 type PageElement = {
@@ -164,21 +165,33 @@ export default function InvitationPreviewPage() {
                                   </div>
                                 );
                               }
-                              if (el.type === 'image') {
-                                return (
-                                  <img
-                                    key={el.id}
+                              if (el.type === 'image' && el.src) {
+                              return (
+                                <div
+                                  key={el.id}
+                                  style={{
+                                    ...baseStyle,
+                                    width: el.width || 100,
+                                    height: el.height || 100,
+                                    position: 'absolute',
+                                  }}
+                                >
+                                  <Image
                                     src={el.src}
                                     alt=""
+                                    fill
                                     style={{
-                                      ...baseStyle,
-                                      width: el.width || 100,
-                                      height: el.height || 100,
-                                      objectFit: (el.styles?.objectFit as string) || 'cover',
+                                      objectFit: (el.styles?.objectFit as
+                                        | 'fill'
+                                        | 'contain'
+                                        | 'cover'
+                                        | 'none'
+                                        | 'scale-down') || 'cover',
                                     }}
                                   />
-                                );
-                              }
+                                </div>
+                              );
+                            }
                               return null;
                             })}
                           </div>
