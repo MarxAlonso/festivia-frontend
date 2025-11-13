@@ -139,6 +139,18 @@ export const invitationService = {
     return response.data;
   },
 
+  // Obtener invitación pública por slug (sin auth)
+  getPublicInvitationBySlug: async (slug: string): Promise<{
+    id: string;
+    title: string;
+    message?: string;
+    customDesign?: Record<string, any>;
+    event?: { title: string; description?: string; eventDate: string; location?: string };
+  }> => {
+    const response = await api.get(`/public/invitations/${slug}`);
+    return response.data;
+  },
+
   // Obtener estadísticas
   getInvitationStats: async (id: string): Promise<{
     views: number;

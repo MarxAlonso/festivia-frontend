@@ -102,6 +102,21 @@ export default function InvitationPreviewPage() {
                 <Button onClick={() => window.print()}>
                   <Eye className="w-4 h-4 mr-2" /> Imprimir/Guardar
                 </Button>
+                <Button
+                  onClick={async () => {
+                    try {
+                      const res = await invitationService.generateUniqueLink(id);
+                      const link = res.link;
+                      try { await navigator.clipboard.writeText(link); } catch {}
+                      window.open(link, '_blank');
+                    } catch (err) {
+                      console.error('Error generando enlace de invitación:', err);
+                      alert('No se pudo generar el enlace público.');
+                    }
+                  }}
+                >
+                  Compartir
+                </Button>
               </div>
             </div>
           </div>
