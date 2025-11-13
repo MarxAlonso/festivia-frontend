@@ -212,18 +212,38 @@ export default function InvitationEditorPage() {
   };
 
   const importPagesFromTemplate = async (templateId: string) => {
-    if (!templateId) return;
-    try {
-      const tpl = await templateService.getTemplateById(templateId);
-      const incoming = tpl.design.pages || [];
-      if (!incoming.length) return;
-      setPages((p) => [...p, ...incoming.map((pg) => ({ ...pg }))]);
-      setImportTemplateId('');
-    } catch (err) {
-      console.error('Error importando páginas del template:', err);
-      alert('No se pudo importar páginas');
-    }
-  };
+  if (!templateId) return;
+  try {
+    const tpl = await templateService.getTemplateById(templateId);
+    const incoming = tpl.design.pages || [];
+    if (!incoming.length) return;
+
+    // Aseguramos que todas las secciones tengan los tipos correctos
+    const validPages: DesignPage[] = incoming.map((pg) => ({
+      background: pg.background
+        ? { type: pg.background.type as BackgroundType, value: pg.background.value }
+        : undefined,
+      sections: pg.sections
+        ? pg.sections
+            .filter((s): s is { key: 'header' | 'body' | 'footer'; text: string } =>
+              ['header', 'body', 'footer'].includes(s.key)
+            )
+            .map((s) => ({
+              key: s.key as 'header' | 'body' | 'footer',
+              text: s.text ?? '',
+            }))
+        : [],
+      elements: pg.elements || [],
+    }));
+
+    setPages((p) => [...p, ...validPages]);
+    setImportTemplateId('');
+  } catch (err) {
+    console.error('Error importando páginas del template:', err);
+    alert('No se pudo importar páginas');
+  }
+};
+
 
   const handleSave = async () => {
     try {
