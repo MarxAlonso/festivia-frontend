@@ -86,32 +86,50 @@ export default function InvitationEditorPage() {
         setFonts(initialFonts);
 
         // Inyectar detalles del evento al body si procede
-        const pagesWithEvent = (() => {
-          const base = initialPages?.length ? initialPages : [
-            { background: { type: 'color', value: '#ffffff' }, sections: [], elements: [] },
-          ];
-          if (!ev) return base;
-          const dateStr = ev.eventDate ? new Date(ev.eventDate).toLocaleDateString() : '';
-          const infoLineParts = [ev.title || '', dateStr, ev.location || ''].filter(Boolean);
-          const infoLine = infoLineParts.join(' • ');
-          const desc = ev.description || '';
-          const details = [infoLine, desc].filter(Boolean).join('\n');
-          const pg0 = base[0] || { background: { type: 'color', value: '#ffffff' }, sections: [], elements: [] };
-          const bodySec = (pg0.sections || []).find((s) => s.key === 'body');
-          const bodyText = bodySec?.text || '';
-          const alreadyHasInfo = bodyText.includes(ev.title || '') || bodyText.includes(dateStr) || bodyText.includes(ev.location || '');
-          const newBody = alreadyHasInfo ? bodyText : [bodyText, details].filter(Boolean).join('\n\n');
-          const newSections = (() => {
-            const sections = pg0.sections || [];
-            const idx = sections.findIndex((s) => s.key === 'body');
-            if (idx >= 0) sections[idx] = { ...sections[idx], text: newBody };
-            else sections.push({ key: 'body', text: newBody });
-            return sections;
-          })();
-          const updatedPg0 = { ...pg0, sections: newSections };
-          const rest = base.slice(1);
-          return [updatedPg0, ...rest];
-        })();
+        const pagesWithEvent: DesignPage[] = (() => {
+  const base: DesignPage[] = (initialPages?.length ? initialPages : [
+    { background: { type: 'color', value: '#ffffff' }, sections: [], elements: [] },
+  ]).map((pg) => {
+    // asegurarse que el background tenga el tipo correcto
+    if (pg.background) {
+      return {
+        ...pg,
+        background: {
+          type: pg.background.type === 'image' ? 'image' : 'color',
+          value: pg.background.value,
+        }
+      };
+    }
+    return pg;
+  });
+
+  if (!ev) return base;
+
+  const dateStr = ev.eventDate ? new Date(ev.eventDate).toLocaleDateString() : '';
+  const infoLineParts = [ev.title || '', dateStr, ev.location || ''].filter(Boolean);
+  const infoLine = infoLineParts.join(' • ');
+  const desc = ev.description || '';
+  const details = [infoLine, desc].filter(Boolean).join('\n');
+
+  const pg0 = base[0] || { background: { type: 'color', value: '#ffffff' }, sections: [], elements: [] };
+  const bodySec = (pg0.sections || []).find((s) => s.key === 'body');
+  const bodyText = bodySec?.text || '';
+  const alreadyHasInfo = bodyText.includes(ev.title || '') || bodyText.includes(dateStr) || bodyText.includes(ev.location || '');
+  const newBody = alreadyHasInfo ? bodyText : [bodyText, details].filter(Boolean).join('\n\n');
+
+  const newSections = (() => {
+    const sections = pg0.sections || [];
+    const idx = sections.findIndex((s) => s.key === 'body');
+    if (idx >= 0) sections[idx] = { ...sections[idx], text: newBody };
+    else sections.push({ key: 'body', text: newBody });
+    return sections;
+  })();
+
+  const updatedPg0 = { ...pg0, sections: newSections };
+  const rest = base.slice(1);
+  return [updatedPg0, ...rest];
+})();
+
 
         setPages(pagesWithEvent);
       } catch (err) {
