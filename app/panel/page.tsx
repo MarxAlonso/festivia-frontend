@@ -200,15 +200,12 @@ export default function PanelPage() {
                   <div className="p-4">
                     <h3 className="font-semibold text-celebrity-gray-900 mb-1">{template.name}</h3>
                     <p className="text-sm text-celebrity-gray-600 mb-3">{template.category}</p>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full"
-                      href={`/panel/crear?template=${template.id}`}
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Usar Plantilla
-                    </Button>
+                    <Link href={`/panel/crear?template=${template.id}`} className="w-full">
+                      <Button variant="outline" size="sm" className="w-full">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Usar Plantilla
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               ))}
