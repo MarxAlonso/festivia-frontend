@@ -510,7 +510,22 @@ export default function InvitationEditorPage() {
                                   { (el.countdown?.source || 'event') === 'custom' && (
                                     <>
                                       <label className="text-xs">Fecha objetivo</label>
-                                      <input type="datetime-local" value={(el.countdown?.dateISO || '').replace('Z','')} onChange={(e) => updateElement(selectedPage, el.id, { countdown: { ...(el.countdown || {}), dateISO: new Date(e.target.value).toISOString() } })} />
+                                      <input
+  type="datetime-local"
+  value={(el.countdown?.dateISO || '').replace('Z','')}
+  onChange={(e) => {
+    const raw = e.target.value;
+    if (!raw) return; // evita ISO inválido cuando el input queda vacío
+    const iso = new Date(raw).toISOString();
+    updateElement(selectedPage, el.id, {
+      countdown: {
+        ...(el.countdown ?? { source: 'custom' }), // <-- aseguramos source
+        dateISO: iso,
+      },
+    });
+  }}
+/>
+
                                     </>
                                   )}
                                   <label className="text-xs">Tamaño</label>
