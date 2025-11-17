@@ -2,13 +2,14 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import { MapEmbed } from "@/components/MapEmbed";
 import { useParams } from "next/navigation";
 import { invitationService } from "@/lib/invitations";
 
 type ColorKey = "primary" | "secondary" | "accent" | "text";
 type PageElement = {
   id: string;
-  type: "text" | "image" | "countdown";
+  type: "text" | "image" | "countdown" | "map";
   x: number;
   y: number;
   zIndex?: number;
@@ -19,6 +20,7 @@ type PageElement = {
   height?: number;
   styles?: React.CSSProperties & { objectFit?: "fill" | "contain" | "cover" | "none" | "scale-down" };
   countdown?: { source: "event" | "custom"; dateISO?: string };
+  map?: { source: "event" | "custom"; query?: string; url?: string };
 };
 
 type EditableDesign = {
@@ -205,6 +207,14 @@ export default function PublicInvitationPage() {
                                     alt=""
                                     style={{ width: "100%", height: "100%", objectFit: objectFitStyle }}
                                   />
+                                </div>
+                              );
+                            }
+                            if (el.type === "map") {
+                              const q = (el.map?.source || "event") === "event" ? event?.location : (el.map?.query || el.map?.url);
+                              return (
+                                <div key={el.id} style={{ ...baseStyle, width: el.width || 300, height: el.height || 200 }}>
+                                  <MapEmbed query={q || ""} />
                                 </div>
                               );
                             }

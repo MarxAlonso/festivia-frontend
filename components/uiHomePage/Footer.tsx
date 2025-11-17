@@ -12,7 +12,7 @@ export const Footer: React.FC = () => {
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-2xl font-bold font-serif bg-gradient-to-r from-celebrity-purple to-celebrity-pink bg-clip-text text-transparent">
-                  FESTIVIA
+                  CELEBRIA
                 </span>
               </div>
               <p className="text-[#1E1E1E]">

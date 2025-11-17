@@ -359,11 +359,11 @@ export default function PanelCreateInvitationPage() {
             <div className="max-w-2xl mx-auto space-y-4">
               <div>
                 <label className="block text-sm font-medium text-celebrity-gray-700 mb-2">Título del evento *</label>
-                <input type="text" value={eventData.title} onChange={(e) => setEventData(prev => ({ ...prev, title: e.target.value }))} className="w-full px-4 py-3 border border-celebrity-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-celebrity-purple focus:border-transparent" placeholder="Ej: Boda de María y Juan" required />
+                <input type="text" value={eventData.title} onChange={(e) => setEventData(prev => ({ ...prev, title: e.target.value }))} className="w-full px-4 py-3 border border-celebrity-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-celebrity-purple focus:border-transparent" placeholder="Ej: Boda de María y Juan" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-celebrity-gray-700 mb-2">Tipo de evento</label>
-                <select value={eventData.type} onChange={(e) => setEventData(prev => ({ ...prev, type: e.target.value as EventType }))} className="w-full px-4 py-3 border border-celebrity-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-celebrity-purple focus:border-transparent">
+                <select value={eventData.type} onChange={(e) => setEventData(prev => ({ ...prev, type: e.target.value as EventType }))} className="w-full px-4 py-3 border border-celebrity-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-celebrity-purple focus:border-transparent text-black">
                   <option value={EventType.WEDDING}>Boda</option>
                   <option value={EventType.BIRTHDAY}>Cumpleaños</option>
                   <option value={EventType.CORPORATE}>Corporativo</option>
@@ -373,16 +373,16 @@ export default function PanelCreateInvitationPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-celebrity-gray-700 mb-2">Descripción</label>
-                <textarea value={eventData.description} onChange={(e) => setEventData(prev => ({ ...prev, description: e.target.value }))} className="w-full px-4 py-3 border border-celebrity-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-celebrity-purple focus:border-transparent h-32" placeholder="Describe tu evento..." />
+                <textarea value={eventData.description} onChange={(e) => setEventData(prev => ({ ...prev, description: e.target.value }))} className="w-full px-4 py-3 border border-celebrity-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-celebrity-purple focus:border-transparent h-32 text-black" placeholder="Describe tu evento..." />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-celebrity-gray-700 mb-2">Fecha del evento *</label>
-                  <input type="date" value={eventData.eventDate.toISOString().split('T')[0]} onChange={(e) => setEventData(prev => ({ ...prev, eventDate: new Date(e.target.value) }))} className="w-full px-4 py-3 border border-celebrity-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-celebrity-purple focus:border-transparent" required />
+                  <input type="date" value={eventData.eventDate.toISOString().split('T')[0]} onChange={(e) => setEventData(prev => ({ ...prev, eventDate: new Date(e.target.value) }))} className="w-full px-4 py-3 border border-celebrity-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-celebrity-purple focus:border-transparent text-black" required />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-celebrity-gray-700 mb-2">Ubicación</label>
-                  <input type="text" value={eventData.location} onChange={(e) => setEventData(prev => ({ ...prev, location: e.target.value }))} className="w-full px-4 py-3 border border-celebrity-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-celebrity-purple focus:border-transparent" placeholder="Lugar del evento" />
+                  <input type="text" value={eventData.location} onChange={(e) => setEventData(prev => ({ ...prev, location: e.target.value }))} className="w-full px-4 py-3 border border-celebrity-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-celebrity-purple focus:border-transparent text-black" placeholder="Lugar del evento" />
                 </div>
               </div>
             </div>
@@ -401,7 +401,7 @@ export default function PanelCreateInvitationPage() {
                 <div className="space-y-3">
                   <div>
                     <label className="block text-sm font-medium text-celebrity-gray-700 mb-2">Color principal</label>
-                    <input type="color" value={designData.colors?.primary || '#8b5cf6'} onChange={(e) => setDesignData((prev: EditableDesign) => ({ ...prev, colors: { ...(prev.colors || {}), primary: e.target.value } }))} className="w-full h-12 rounded-lg border border-celebrity-gray-300" />
+                    <input type="color" value={designData.colors?.primary || '#8b5cf6'} onChange={(e) => setDesignData((prev: EditableDesign) => ({ ...prev, colors: { ...(prev.colors || {}), primary: e.target.value } }))} className="w-full h-12 rounded-lg border border-celebrity-gray-300 text-black" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-celebrity-gray-700 mb-2">Color secundario</label>

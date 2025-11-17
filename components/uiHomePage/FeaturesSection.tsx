@@ -6,7 +6,7 @@ export const FeaturesSection: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold font-serif text-celebrity-gray-900 mb-4">
-              ¿Por Qué Elegir FESTIVIA?
+              ¿Por Qué Elegir CELEBRIA?
             </h2>
             <p className="text-lg text-celebrity-gray-600 max-w-2xl mx-auto">
               Creamos herramientas que hacen que el diseño de invitaciones sea fácil, 

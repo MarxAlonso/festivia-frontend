@@ -20,7 +20,7 @@ export const Navbar: React.FC = () => {
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-celebrity-purple to-celebrity-pink bg-clip-text text-transparent font-serif">
-              FESTIVIA
+              CELEBRIA
             </span>
           </Link>
 

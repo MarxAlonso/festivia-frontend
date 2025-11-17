@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { CountdownTimer } from '@/components/CountdownTimer';
+import { MapEmbed } from '@/components/MapEmbed';
 import { Button } from '@/components/ui/Button';
 import { Palette, Plus, Save } from 'lucide-react';
 import { CreateTemplateDto, TemplateType } from '@/lib/templates';
@@ -26,7 +27,7 @@ export function TemplateEditor({ form, setForm, editingId, saving, onCancel, onS
     fontFamily: form.design.fonts.body,
   }), [form]);
 
-  const addElement = (pageIdx: number, type: 'text' | 'image' | 'shape' | 'countdown') => {
+  const addElement = (pageIdx: number, type: 'text' | 'image' | 'shape' | 'countdown' | 'map') => {
     setForm((p) => {
       const pages = [...(p.design.pages || [])];
       const page = { ...(pages[pageIdx] || {}) } as any;
@@ -36,6 +37,8 @@ export function TemplateEditor({ form, setForm, editingId, saving, onCancel, onS
         elements.push({ id, type, content: 'Nuevo texto', x: 20, y: 30, zIndex: 1, style: { color: '#1f2937', fontFamily: p.design.fonts.body, fontSize: '16px' } });
       } else if (type === 'image') {
         elements.push({ id, type, src: 'https://via.placeholder.com/150', x: 40, y: 60, width: 120, height: 80, zIndex: 1, style: { objectFit: 'cover' } });
+      } else if (type === 'map') {
+        elements.push({ id, type, x: 24, y: 24, width: 300, height: 200, zIndex: 1, style: {}, map: { source: 'custom', query: 'Parque Central, Ciudad' } });
       } else if (type === 'countdown') {
         elements.push({ id, type, x: 24, y: 24, width: 300, height: 60, zIndex: 1, style: {}, countdown: { source: 'event' } });
       } else {
@@ -219,6 +222,14 @@ export function TemplateEditor({ form, setForm, editingId, saving, onCancel, onS
                                 <img key={el.id} src={el.src || ''} alt="" style={{ ...baseStyle, objectFit: (el.style?.objectFit as any) || 'cover' }} />
                               );
                             }
+                            if (el.type === 'map') {
+                              const q = (el.map?.source || 'custom') === 'custom' ? (el.map?.query || el.map?.url || '') : '';
+                              return (
+                                <div key={el.id} style={baseStyle}>
+                                  <MapEmbed query={q} />
+                                </div>
+                              );
+                            }
                             if (el.type === 'countdown') {
                               return (
                                 <div key={el.id} style={baseStyle}>
@@ -264,6 +275,7 @@ export function TemplateEditor({ form, setForm, editingId, saving, onCancel, onS
                               <div className="flex gap-2">
                                 <Button variant="outline" onClick={() => addElement(idx, 'text')}>Agregar texto</Button>
                                 <Button variant="outline" onClick={() => addElement(idx, 'image')}>Agregar imagen</Button>
+                                <Button variant="outline" onClick={() => addElement(idx, 'map')}>Agregar mapa</Button>
                                 <Button variant="outline" onClick={() => addElement(idx, 'countdown')}>Agregar cronómetro</Button>
                               </div>
                             </div>
@@ -297,6 +309,23 @@ export function TemplateEditor({ form, setForm, editingId, saving, onCancel, onS
                                           <div className="col-span-2">
                                             <label className="block text-xs font-medium mb-1">Fecha objetivo</label>
                                             <input type="datetime-local" className="w-full px-3 py-2 border rounded" value={(el.countdown?.dateISO || '').replace('Z','')} onChange={(e) => updateElement(idx, el.id, { countdown: { ...(el.countdown || {}), dateISO: new Date(e.target.value).toISOString() } })} />
+                                          </div>
+                                        )}
+                                      </>
+                                    )}
+                                    {el.type === 'map' && (
+                                      <>
+                                        <div>
+                                          <label className="block text-xs font-medium mb-1">Fuente</label>
+                                          <select className="w-full px-3 py-2 border rounded" value={el.map?.source || 'custom'} onChange={(e) => updateElement(idx, el.id, { map: { ...(el.map || {}), source: e.target.value } })}>
+                                            <option value="event">Ubicación del evento</option>
+                                            <option value="custom">Ubicación personalizada</option>
+                                          </select>
+                                        </div>
+                                        {(el.map?.source || 'custom') === 'custom' && (
+                                          <div className="col-span-2">
+                                            <label className="block text-xs font-medium mb-1">Texto o URL</label>
+                                            <input className="w-full px-3 py-2 border rounded" value={el.map?.query || el.map?.url || ''} onChange={(e) => updateElement(idx, el.id, { map: { ...(el.map || {}), query: e.target.value, url: undefined } })} />
                                           </div>
                                         )}
                                       </>
