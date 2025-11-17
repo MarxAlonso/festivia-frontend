@@ -560,7 +560,15 @@ export default function InvitationEditorPage() {
                                   {(el.map?.source || 'event') === 'custom' && (
                                     <>
                                       <label className="text-xs text-black">Texto o URL</label>
-                                      <input className="col-span-2 px-3 py-2 border border-gray-300 rounded text-black" value={el.map?.query || el.map?.url || ''} onChange={(e) => updateElement(selectedPage, el.id, { map: { ...(el.map || {}), query: e.target.value, url: undefined } })} />
+                                      <input className="col-span-2 px-3 py-2 border border-gray-300 rounded text-black" value={el.map?.query || el.map?.url || ''} onChange={(e) =>
+                                        updateElement(selectedPage, el.id, {
+                                          map: {
+                                            source: el.map?.source ?? "custom",
+                                            query: e.target.value,
+                                            url: undefined
+                                          }
+                                        })
+                                      }/>
                                     </>
                                   )}
                                   <label className="text-xs text-black">Ancho</label>
