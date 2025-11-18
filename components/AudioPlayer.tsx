@@ -23,21 +23,22 @@ export function AudioPlayer({ source, url }: { source: 'file' | 'youtube'; url?:
       const a = audioRef.current;
       if (!a) return;
       const onInteract = () => {
-        a.muted = false;
-        a.play().catch(() => {});
-        document.removeEventListener('pointerdown', onInteract);
+        try {
+          a.muted = false;
+          a.play().catch(() => {});
+        } catch {}
       };
       a.autoplay = true;
       a.loop = true;
       a.setAttribute("playsinline", "true");
       a.muted = true;
       a.play().catch(() => {});
-      document.addEventListener('pointerdown', onInteract);
-      return () => document.removeEventListener('pointerdown', onInteract);
+      ['pointerdown','click','touchstart','keydown'].forEach((ev) => document.addEventListener(ev, onInteract, { once: true } as any));
+      return () => ['pointerdown','click','touchstart','keydown'].forEach((ev) => document.removeEventListener(ev, onInteract as any));
     }
     const id = parseYouTubeId(url);
     if (!id) return;
-    const onYouTubeIframeAPIReady = () => {
+    const initYT = () => {
       const YT = (window as any).YT;
       if (!YT || !ytRef.current) return;
       const player = new YT.Player(ytRef.current, {
@@ -54,9 +55,8 @@ export function AudioPlayer({ source, url }: { source: 'file' | 'youtube'; url?:
       });
       const onInteract = () => {
         try { player.unMute(); player.playVideo(); } catch {}
-        document.removeEventListener('pointerdown', onInteract);
       };
-      document.addEventListener('pointerdown', onInteract);
+      ['pointerdown','click','touchstart','keydown'].forEach((ev) => document.addEventListener(ev, onInteract, { once: true } as any));
     };
     const scriptId = 'yt-iframe-api';
     if (!document.getElementById(scriptId)) {
@@ -65,7 +65,11 @@ export function AudioPlayer({ source, url }: { source: 'file' | 'youtube'; url?:
       s.src = 'https://www.youtube.com/iframe_api';
       document.body.appendChild(s);
     }
-    (window as any).onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+    if ((window as any).YT && (window as any).YT.Player) {
+      initYT();
+    } else {
+      (window as any).onYouTubeIframeAPIReady = initYT;
+    }
     return () => {
     };
   }, [source, url]);

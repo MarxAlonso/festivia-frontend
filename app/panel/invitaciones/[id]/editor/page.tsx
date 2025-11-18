@@ -380,8 +380,8 @@ export default function InvitationEditorPage() {
     background: '#ffffff',
   }), [currentPage?.orientation]);
   const backgroundStyle = currentPage?.background?.type === 'image'
-    ? { backgroundImage: `url(${currentPage.background?.value || ''})`, backgroundSize: (currentPage.background?.fit || 'cover'), backgroundPosition: 'center' }
-    : { background: currentPage?.background?.value || '#ffffff' };
+    ? { backgroundImage: `url(${currentPage.background?.value || ''})`, backgroundSize: (currentPage.background?.fit || 'cover'), backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundColor: '#D4AF37' }
+    : { background: currentPage?.background?.value || '#D4AF37' };
 
   return (
     <OrganizerProtectedRoute>
@@ -409,7 +409,7 @@ export default function InvitationEditorPage() {
                       {pages.map((pg, idx) => (
                         <div key={idx} className={`cursor-pointer rounded border ${idx === selectedPage ? 'border-celebrity-purple' : 'border-celebrity-gray-200'}`} onClick={() => setSelectedPage(idx)}>
                           <div style={{ width: pg.orientation === 'landscape' ? 200 : 120, height: pg.orientation === 'landscape' ? 120 : 200, ...(
-                            pg.background?.type === 'image' ? { backgroundImage: `url(${pg.background?.value})`, backgroundSize: (pg.background?.fit || 'cover'), backgroundPosition: 'center' } : { background: pg.background?.value || '#ffffff' }
+                            pg.background?.type === 'image' ? { backgroundImage: `url(${pg.background?.value})`, backgroundSize: (pg.background?.fit || 'cover'), backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundColor: '#D4AF37' } : { background: pg.background?.value || '#D4AF37' }
                           ) }} />
                           <div className="p-2 flex items-center justify-between text-xs">
                             <span className="text-black">Página {idx + 1}</span>
@@ -548,6 +548,11 @@ export default function InvitationEditorPage() {
                                   <input type="number text-black" value={el.width || 100} onChange={(e) => updateElement(selectedPage, el.id, { width: Number(e.target.value) })} />
                                   <label className="text-xs text-black">Alto</label>
                                   <input type="number text-black" value={el.height || 100} onChange={(e) => updateElement(selectedPage, el.id, { height: Number(e.target.value) })} />
+                                  <label className="text-xs text-black">Ajuste</label>
+                                  <select className="text-black" value={(el.styles?.objectFit as any) || 'contain'} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), objectFit: e.target.value as any } })}>
+                                    <option value="contain">Mostrar completa (contain)</option>
+                                    <option value="cover">Cubrir (cover)</option>
+                                  </select>
                                 </div>
                               ) : el.type === 'countdown' ? (
                                 <div className="grid grid-cols-2 gap-2 mt-2">
@@ -717,7 +722,8 @@ export default function InvitationEditorPage() {
                       return <div key={el.id} style={style}>{el.content}</div>;
                     }
                     if (el.type === 'image') {
-                      return <img key={el.id} src={el.src} alt="" style={{ ...style, width: el.width || 100, height: el.height || 100 }} />;
+                      const objectFitStyle = (el.styles?.objectFit as any) || 'contain';
+                      return <img key={el.id} src={el.src} alt="" style={{ ...style, width: el.width || 100, height: el.height || 100, objectFit: objectFitStyle }} />;
                     }
                     if (el.type === 'map') {
                       const q = (el.map?.source || 'event') === 'event' ? (eventDraft?.location || event?.location) : (el.map?.query || el.map?.url);

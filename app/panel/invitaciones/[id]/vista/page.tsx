@@ -108,7 +108,7 @@ export default function InvitationPreviewPage() {
 
   return (
     <OrganizerProtectedRoute>
-      <div className="flex h-screen bg-[#F6E7E4]">
+      <div className="flex h-screen" style={{ backgroundColor: '#D4AF37' }}>
         <Sidebar />
         <div className="flex-1 overflow-auto">
           <div className="bg-white border-b border-celebrity-gray-200 px-8 py-6">
@@ -168,8 +168,8 @@ export default function InvitationPreviewPage() {
                   })()}
                   {designData.pages.map((page, idx) => {
                     const style = page.background?.type === 'image'
-                      ? { backgroundImage: `url(${page.background.value})`, backgroundSize: ((page as any).background?.fit || 'cover'), backgroundPosition: 'center' }
-                      : { background: page.background?.value || '#ffffff' };
+                      ? { backgroundImage: `url(${page.background.value})`, backgroundSize: (((page as any).background?.fit as string) || 'cover'), backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundColor: '#D4AF37' }
+                      : { background: page.background?.value || '#D4AF37' };
                     const header = page.sections?.find((s) => s.key === 'header')?.text || '';
                     const body = page.sections?.find((s) => s.key === 'body')?.text || '';
                     const footer = page.sections?.find((s) => s.key === 'footer')?.text || '';
@@ -188,7 +188,7 @@ export default function InvitationPreviewPage() {
                     const scale = Math.min(containerSize.w / pageW, (containerSize.h || 480) / pageH);
                     return (
                       <div key={idx} className="mx-auto" style={{ width: pageW * scale, height: pageH * scale }}>
-                        <div className="rounded-lg border border-celebrity-gray-200 overflow-hidden" style={{ width: '100%', height: '100%', position: 'relative' }}>
+                        <div className="rounded-lg overflow-hidden" style={{ width: '100%', height: '100%', position: 'relative' }}>
                           <div style={{ position: 'absolute', left: 0, top: 0, width: pageW, height: pageH, transform: `scale(${scale})`, transformOrigin: 'top left', ...style }}>
                             <div className="absolute inset-0 p-4">
                             {isCentered ? (
@@ -233,7 +233,7 @@ export default function InvitationPreviewPage() {
                                   }}
                                 >
                                   {(() => {
-                                    const objectFitStyle = (el.styles?.objectFit as any) || (el as any).style?.objectFit || 'cover';
+                                    const objectFitStyle = (el.styles?.objectFit as any) || (el as any).style?.objectFit || 'contain';
                                     return (
                                       <Image
                                         src={el.src}

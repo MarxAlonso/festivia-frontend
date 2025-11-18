@@ -96,9 +96,19 @@ export default function PublicInvitationPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F6E7E4]">
+    <div className="min-h-screen" style={{ backgroundColor: '#D4AF37' }}>
       <div className="px-6 py-6">
-        <div ref={containerRef} className="mx-auto" style={{ width: '100%', height: '100vh' }}>
+        <div
+  ref={containerRef}
+  className="mx-auto flex justify-center items-start"
+  style={{
+    width: "100%",
+    minHeight: "100vh",
+    backgroundColor: "#D4AF37",
+    paddingTop: "20px",
+    paddingBottom: "20px",
+  }}
+>
           {loading ? (
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-celebrity-purple"></div>
@@ -128,9 +138,11 @@ export default function PublicInvitationPage() {
         backgroundImage: `url(${page.background.value})`,
         backgroundSize: (page as any).background?.fit || "cover",
         backgroundPosition: "center",
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#D4AF37',
       }
     : {
-        background: page.background?.value ?? designData?.colors?.primary ?? "#ffffff"
+        background: page.background?.value || '#D4AF37'
       };
 
                 const header = page.sections?.find((s) => s.key === "header")?.text || "";
@@ -149,11 +161,20 @@ export default function PublicInvitationPage() {
                 const scale = Math.min(containerSize.w / BASE_W, containerSize.h / BASE_H);
                 return (
                   <div key={idx} className="w-full">
-                    <div
-                      className="rounded-lg border border-celebrity-gray-200 overflow-hidden"
-                      style={{ width: "100%" }}
-                    >
-                      <div style={{ position: "relative", width: BASE_W * scale, height: BASE_H * scale, margin: '0 auto' }}>
+                    <div className="rounded-lg overflow-hidden" style={{ width: "100%" }}>
+                      <div
+  style={{
+    position: "relative",
+    width: BASE_W * scale,
+    height: BASE_H * scale,
+    margin: '0 auto',
+    background: page.background?.type === "image"
+      ? `url(${page.background.value})`
+      : page.background?.value || "#D4AF37",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  }}
+>
                         <div style={{ position: 'absolute', left: 0, top: 0, width: BASE_W, height: BASE_H, transform: `scale(${scale})`, transformOrigin: 'top left', ...style }}>
                           <div className="absolute inset-0 p-6">
                             {isCentered ? (
