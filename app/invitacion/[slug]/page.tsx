@@ -123,13 +123,16 @@ export default function PublicInvitationPage() {
               })()}
               {designData.pages.map((page, idx) => {
                 const style =
-                  page.background?.type === "image"
-                    ? {
-                        backgroundImage: `url(${page.background.value})`,
-                        backgroundSize: ((page as any).background?.fit || "cover"),
-                        backgroundPosition: "center",
-                      }
-                    : { background: page.background?.value || "#ffffff" };
+  page.background?.type === "image"
+    ? {
+        backgroundImage: `url(${page.background.value})`,
+        backgroundSize: (page as any).background?.fit || "cover",
+        backgroundPosition: "center",
+      }
+    : {
+        background: page.background?.value ?? designData?.colors?.primary ?? "#ffffff"
+      };
+
                 const header = page.sections?.find((s) => s.key === "header")?.text || "";
                 const body = page.sections?.find((s) => s.key === "body")?.text || "";
                 const footer = page.sections?.find((s) => s.key === "footer")?.text || "";
@@ -227,7 +230,6 @@ export default function PublicInvitationPage() {
                                     position: "absolute",
                                   }}
                                 >
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
                                     src={el.src}
                                     alt=""

@@ -616,7 +616,15 @@ export default function InvitationEditorPage() {
                                     <option value="youtube">YouTube</option>
                                   </select>
                                   <label className="text-xs text-black">URL</label>
-                                  <input className="col-span-2 px-3 py-2 border border-gray-300 rounded text-black" placeholder="/audio.mp3 o https://youtube.com/watch?v=..." value={el.audio?.url || ''} onChange={(e) => updateElement(selectedPage, el.id, { audio: { ...(el.audio || {}), url: e.target.value } })} />
+                                  <input className="col-span-2 px-3 py-2 border border-gray-300 rounded text-black" placeholder="/audio.mp3 o https://youtube.com/watch?v=..." value={el.audio?.url || ''} onChange={(e) =>updateElement(selectedPage, el.id,{
+                                    audio: {
+                                        source: el.audio?.source ?? "file",
+                                        ...(el.audio ?? {}),
+                                        url: e.target.value
+                                      }
+                                    })
+                                  }
+                                  />
                                   <p className="col-span-2 text-[10px] text-celebrity-gray-600">El audio se reproduce en bucle y no ocupa espacio visible.</p>
                                 </div>
                               ) : null}
