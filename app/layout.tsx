@@ -14,7 +14,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "FESTIVIA - Diseño de Invitaciones Elegantes",
+  title: "CELEBRIA - Diseño de Invitaciones Elegantes",
   description: "Crea invitaciones elegantes y personalizadas para tus eventos especiales",
   keywords: "invitaciones, eventos, bodas, cumpleaños, diseño personalizado",
 };
