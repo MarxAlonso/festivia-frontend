@@ -199,7 +199,7 @@ export default function InvitationEditorPage() {
       x: 20,
       y: 20,
       zIndex: 1,
-      styles: { color: '#111111', fontSize: 16, fontWeight: 'normal' },
+      styles: { color: '#111111', fontSize: 16, fontWeight: 'normal', fontFamily: 'Arial, sans-serif' },
     };
     setPages((p) => p.map((pg, i) => (i === idx ? { ...pg, elements: [...(pg.elements || []), newEl] } : pg)));
   };
@@ -638,9 +638,24 @@ export default function InvitationEditorPage() {
                                 <div className="grid grid-cols-2 gap-2 mt-2">
                                   <input className="col-span-2 px-3 py-2 border border-gray-300 rounded text-black" value={el.content || ''} onChange={(e) => updateElement(selectedPage, el.id, { content: e.target.value })} />
                                   <label className="text-xs text-black">Color</label>
-                                  <input className='border border-gray-300 rounded' type="color" value={(el.styles?.color as string) || '#111111'} onChange={(e) => updateElement(selectedPage, el.id, { styles: { color: e.target.value } })} />
+                                  <input className='border border-gray-300 rounded' type="color" value={(el.styles?.color as string) || '#111111'} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), color: e.target.value } })} />
                                   <label className="text-xs text-black">Tamaño</label>
-                                  <input type="number" className="text-black border border-gray-300 rounded" value={(el.styles?.fontSize as number) || 16} onChange={(e) => updateElement(selectedPage, el.id, { styles: { fontSize: Number(e.target.value) } })} />
+                                  <input type="number" className="text-black border border-gray-300 rounded" value={(el.styles?.fontSize as number) || 16} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), fontSize: Number(e.target.value) } })} />
+                                  <label className="text-xs text-black">Fuente</label>
+                                  <select className="text-black border border-gray-300 rounded" value={(el.styles?.fontFamily as string) || 'Arial, sans-serif'} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), fontFamily: e.target.value } })}>
+                                    <option value="Arial, sans-serif">Arial</option>
+                                    <option value="Arial Black, Arial, sans-serif">Arial Black</option>
+                                    <option value="Verdana, Geneva, sans-serif">Verdana</option>
+                                    <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+                                    <option value="Trebuchet MS, sans-serif">Trebuchet MS</option>
+                                    <option value="Times New Roman, Times, serif">Times New Roman</option>
+                                    <option value="Georgia, serif">Georgia</option>
+                                    <option value="Courier New, Courier, monospace">Courier New</option>
+                                    <option value="Impact, Charcoal, sans-serif">Impact</option>
+                                    <option value="Comic Sans MS, cursive, sans-serif">Comic Sans MS</option>
+                                    <option value="serif">Serif (tema)</option>
+                                    <option value="sans-serif">Sans-serif (tema)</option>
+                                  </select>
                                 </div>
                               ) : el.type === 'image' ? (
                                 <div className="grid grid-cols-2 gap-2 mt-2">
