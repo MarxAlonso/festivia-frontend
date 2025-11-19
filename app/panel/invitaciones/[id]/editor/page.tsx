@@ -270,6 +270,90 @@ export default function InvitationEditorPage() {
     }));
   };
 
+  const EVENT_ELEMENT_IDS = { title: 'event-title', date: 'event-date', location: 'event-location', description: 'event-description' } as const;
+  const getEventElement = (key: keyof typeof EVENT_ELEMENT_IDS) => {
+    const pg0 = pages[0];
+    const id = EVENT_ELEMENT_IDS[key];
+    return (pg0?.elements || []).find((e) => e.id === id);
+  };
+  const ensureEventTextElement = (key: keyof typeof EVENT_ELEMENT_IDS) => {
+    const pageIdx = 0;
+    const id = EVENT_ELEMENT_IDS[key];
+    const dateStr = eventDraft?.eventDate ? new Date(eventDraft.eventDate).toLocaleDateString() : '';
+    const contentMap: Record<keyof typeof EVENT_ELEMENT_IDS, string> = {
+      title: eventDraft?.title || '',
+      date: dateStr,
+      location: eventDraft?.location || '',
+      description: eventDraft?.description || '',
+    };
+    setPages((p) => p.map((pg, i) => {
+      if (i !== pageIdx) return pg;
+      const existing = (pg.elements || []).find((e) => e.id === id);
+      if (existing) {
+        return {
+          ...pg,
+          elements: (pg.elements || []).map((e) => e.id === id ? { ...e, content: contentMap[key] } : e),
+        };
+      }
+      const base: PageElement = {
+        id,
+        type: 'text',
+        content: contentMap[key],
+        x: 24,
+        y: 80,
+        zIndex: 2,
+        styles: { color: '#111111', fontSize: 18, fontWeight: 'normal' },
+      };
+      return { ...pg, elements: [...(pg.elements || []), base] };
+    }));
+  };
+  const nudgeEventElement = (key: keyof typeof EVENT_ELEMENT_IDS, dx: number, dy: number) => {
+    const pageIdx = 0;
+    const id = EVENT_ELEMENT_IDS[key];
+    setPages((p) => p.map((pg, i) => {
+      if (i !== pageIdx) return pg;
+      const els = pg.elements || [];
+      const found = els.find((e) => e.id === id);
+      if (!found) {
+        const dateStr = eventDraft?.eventDate ? new Date(eventDraft.eventDate).toLocaleDateString() : '';
+        const contentMap: Record<keyof typeof EVENT_ELEMENT_IDS, string> = {
+          title: eventDraft?.title || '',
+          date: dateStr,
+          location: eventDraft?.location || '',
+          description: eventDraft?.description || '',
+        };
+        const base: PageElement = {
+          id,
+          type: 'text',
+          content: contentMap[key],
+          x: 24 + dx,
+          y: 80 + dy,
+          zIndex: 2,
+          styles: { color: '#111111', fontSize: 18, fontWeight: 'normal' },
+        };
+        return { ...pg, elements: [...els, base] };
+      }
+      return {
+        ...pg,
+        elements: els.map((e) => e.id === id ? { ...e, x: (e.x || 0) + dx, y: (e.y || 0) + dy } : e),
+      };
+    }));
+  };
+  const updateEventElementStyle = (key: keyof typeof EVENT_ELEMENT_IDS, styles: Record<string, any>) => {
+    const pageIdx = 0;
+    const id = EVENT_ELEMENT_IDS[key];
+    setPages((p) => p.map((pg, i) => {
+      if (i !== pageIdx) return pg;
+      const els = pg.elements || [];
+      const found = els.find((e) => e.id === id);
+      if (!found) return pg;
+      return {
+        ...pg,
+        elements: els.map((e) => e.id === id ? { ...e, styles: { ...(e.styles || {}), ...styles } } : e),
+      };
+    }));
+  };
+
   const removeElement = (pageIdx: number, elId: string) => {
     setPages((p) => p.map((pg, i) => (i === pageIdx ? { ...pg, elements: (pg.elements || []).filter((el) => el.id !== elId) } : pg)));
   };
@@ -515,15 +599,15 @@ export default function InvitationEditorPage() {
                       <div className="col-span-2 mt-4">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="text-sm font-semibold text-black">Elementos</h4>
-                          <div className="flex gap-2">
-                            <Button variant="outline" onClick={() => addTextElement(selectedPage)}><Plus className="w-4 h-4 mr-2" /> Texto</Button>
-                            <Button variant="outline" onClick={() => {
+                        <div className="flex flex-wrap gap-2">
+                            <Button className="w-full sm:w-auto" variant="outline" onClick={() => addTextElement(selectedPage)}><Plus className="w-4 h-4 mr-2" /> Texto</Button>
+                            <Button className="w-full sm:w-auto" variant="outline" onClick={() => {
                               const url = prompt('URL de imagen (Google Drive u otra):');
                           if (url) addImageElement(selectedPage, url);
                         }}>Imagen (URL)</Button>
-                        <Button variant="outline" onClick={() => addMapElement(selectedPage)}>Mapa</Button>
-                        <Button variant="outline" onClick={() => addCountdownElement(selectedPage)}>Cronómetro</Button>
-                        <Button variant="outline" onClick={() => addAudioElement(selectedPage)}>Audio</Button>
+                        <Button className="w-full sm:w-auto" variant="outline" onClick={() => addMapElement(selectedPage)}>Mapa</Button>
+                        <Button className="w-full sm:w-auto" variant="outline" onClick={() => addCountdownElement(selectedPage)}>Cronómetro</Button>
+                        <Button className="w-full sm:w-auto" variant="outline" onClick={() => addAudioElement(selectedPage)}>Audio</Button>
                       </div>
                         </div>
                         <div className="space-y-3">
@@ -676,9 +760,55 @@ export default function InvitationEditorPage() {
                       <label className="block text-xs font-medium text-celebrity-gray-700 mb-1">Descripción</label>
                       <textarea rows={3} className="w-full text-black px-3 py-2 border border-celebrity-gray-300 rounded" value={eventDraft.description || ''} onChange={(e) => setEventDraft((d) => ({ ...(d || {}), description: e.target.value }))} />
                     </div>
-                    <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2">
                       <Button onClick={saveEventDraft} disabled={savingEvent}><Save className="w-4 h-4 mr-2" /> Guardar evento</Button>
                       <Button variant="outline" onClick={syncEventDetailsIntoBody}><Eye className="w-4 h-4 mr-2" /> Sincronizar con el Body (pág. 1)</Button>
+                    </div>
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <div className="flex flex-wrap gap-2">
+                          <Button size="sm" variant="outline" onClick={() => ensureEventTextElement('title')}>Elemento</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('title', 0, -5)}>↑</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('title', 0, 5)}>↓</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('title', -5, 0)}>←</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('title', 5, 0)}>→</Button>
+                          <input type="number" className="px-3 py-2 border border-celebrity-gray-300 rounded text-black" value={(getEventElement('title')?.styles?.fontSize as number) || 18} onChange={(e) => updateEventElementStyle('title', { fontSize: Number(e.target.value) })} />
+                          <input type="color" className="h-10 border border-celebrity-gray-300 rounded" value={(getEventElement('title')?.styles?.color as string) || '#111111'} onChange={(e) => updateEventElementStyle('title', { color: e.target.value })} />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex flex-wrap gap-2">
+                          <Button size="sm" variant="outline" onClick={() => ensureEventTextElement('date')}>Elemento</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('date', 0, -5)}>↑</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('date', 0, 5)}>↓</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('date', -5, 0)}>←</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('date', 5, 0)}>→</Button>
+                          <input type="number" className="px-3 py-2 border border-celebrity-gray-300 rounded text-black" value={(getEventElement('date')?.styles?.fontSize as number) || 18} onChange={(e) => updateEventElementStyle('date', { fontSize: Number(e.target.value) })} />
+                          <input type="color" className="h-10 border border-celebrity-gray-300 rounded" value={(getEventElement('date')?.styles?.color as string) || '#111111'} onChange={(e) => updateEventElementStyle('date', { color: e.target.value })} />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex flex-wrap gap-2">
+                          <Button size="sm" variant="outline" onClick={() => ensureEventTextElement('location')}>Elemento</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('location', 0, -5)}>↑</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('location', 0, 5)}>↓</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('location', -5, 0)}>←</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('location', 5, 0)}>→</Button>
+                          <input type="number" className="px-3 py-2 border border-celebrity-gray-300 rounded text-black" value={(getEventElement('location')?.styles?.fontSize as number) || 18} onChange={(e) => updateEventElementStyle('location', { fontSize: Number(e.target.value) })} />
+                          <input type="color" className="h-10 border border-celebrity-gray-300 rounded" value={(getEventElement('location')?.styles?.color as string) || '#111111'} onChange={(e) => updateEventElementStyle('location', { color: e.target.value })} />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex flex-wrap gap-2">
+                          <Button size="sm" variant="outline" onClick={() => ensureEventTextElement('description')}>Elemento</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('description', 0, -5)}>↑</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('description', 0, 5)}>↓</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('description', -5, 0)}>←</Button>
+                          <Button size="sm" variant="outline" onClick={() => nudgeEventElement('description', 5, 0)}>→</Button>
+                          <input type="number" className="px-3 py-2 border border-celebrity-gray-300 rounded text-black" value={(getEventElement('description')?.styles?.fontSize as number) || 18} onChange={(e) => updateEventElementStyle('description', { fontSize: Number(e.target.value) })} />
+                          <input type="color" className="h-10 border border-celebrity-gray-300 rounded" value={(getEventElement('description')?.styles?.color as string) || '#111111'} onChange={(e) => updateEventElementStyle('description', { color: e.target.value })} />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
