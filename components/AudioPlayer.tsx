@@ -45,11 +45,11 @@ export function AudioPlayer({ source, url }: { source: 'file' | 'youtube'; url?:
         width: '0',
         height: '0',
         videoId: id,
-        playerVars: { autoplay: 1, controls: 0, modestbranding: 1, loop: 1, playlist: id },
+        playerVars: { autoplay: 1, controls: 0, modestbranding: 1, loop: 1, playlist: id, start: 10 },
         events: {
           onReady: (e: any) => {
             setReady(true);
-            try { e.target.mute(); e.target.playVideo(); } catch {}
+            try { e.target.mute(); e.target.seekTo(10, true); e.target.playVideo(); } catch {}
           },
         },
       });
