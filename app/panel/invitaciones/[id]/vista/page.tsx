@@ -95,6 +95,7 @@ export default function InvitationPreviewPage() {
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerSize, setContainerSize] = useState<{ w: number; h: number }>({ w: 720, h: 480 });
+  const [confirmations, setConfirmations] = useState<Array<{ id: string; name: string; lastName: string; createdAt: string }>>([]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -332,6 +333,30 @@ export default function InvitationPreviewPage() {
                 <p><span className="font-medium">Estado:</span> {invitation?.status || '-'}</p>
                 <p><span className="font-medium">Evento:</span> {event?.title || invitation?.eventId || '-'}</p>
                 <p><span className="font-medium">Creada:</span> {invitation?.createdAt ? new Date(invitation.createdAt).toLocaleString() : '-'}</p>
+              </div>
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-semibold text-celebrity-gray-900">Confirmaciones</h4>
+                  <Button variant="outline" size="sm" onClick={async () => {
+                    if (!invitation?.id) return;
+                    try {
+                      const res = await invitationService.getInvitationConfirmations(invitation.id);
+                      setConfirmations(res);
+                    } catch {}
+                  }}>Actualizar</Button>
+                </div>
+                {confirmations.length === 0 ? (
+                  <p className="text-sm text-celebrity-gray-600">Sin confirmaciones</p>
+                ) : (
+                  <div className="space-y-2">
+                    {confirmations.map((c) => (
+                      <div key={c.id} className="flex items-center justify-between border border-celebrity-gray-200 rounded px-3 py-2">
+                        <span className="text-sm text-black">{c.name} {c.lastName}</span>
+                        <span className="text-xs text-celebrity-gray-600">{new Date(c.createdAt).toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

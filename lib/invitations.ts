@@ -151,6 +151,18 @@ export const invitationService = {
     return response.data;
   },
 
+  // Confirmación pública por slug
+  confirmPublicInvitation: async (slug: string, data: { name: string; lastName: string }): Promise<{ id: string; name: string; lastName: string; createdAt: string }> => {
+    const response = await api.post(`/public/invitations/${slug}/confirmations`, data);
+    return response.data;
+  },
+
+  // Listar confirmaciones de una invitación (organizer)
+  getInvitationConfirmations: async (id: string): Promise<Array<{ id: string; name: string; lastName: string; createdAt: string }>> => {
+    const response = await api.get(`/invitations/${id}/confirmations`);
+    return response.data;
+  },
+
   // Obtener estadísticas
   getInvitationStats: async (id: string): Promise<{
     views: number;

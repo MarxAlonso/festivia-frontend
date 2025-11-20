@@ -18,7 +18,7 @@ type BackgroundType = 'image' | 'color';
 
 type PageElement = {
   id: string;
-  type: 'text' | 'image' | 'shape' | 'countdown' | 'map' | 'audio' | 'whatsapp';
+  type: 'text' | 'image' | 'shape' | 'countdown' | 'map' | 'audio' | 'whatsapp' | 'confirm';
   content?: string; // texto para type=text
   src?: string; // url para type=image
   x: number;
@@ -32,6 +32,7 @@ type PageElement = {
   map?: { source: 'event' | 'custom'; query?: string; url?: string };
   audio?: { source: 'file' | 'youtube'; url?: string };
   whatsapp?: { phone?: string; message?: string; label?: string };
+  confirm?: { label?: string };
 };
 
 type DesignPage = {
@@ -272,6 +273,21 @@ export default function InvitationEditorPage() {
       zIndex: 2,
       styles: { backgroundColor: '#25D366', color: '#ffffff', borderRadius: 8 },
       whatsapp: { phone: '+51', message: '', label: 'Agendar asistencia' },
+    };
+    setPages((p) => p.map((pg, i) => (i === idx ? { ...pg, elements: [...(pg.elements || []), newEl] } : pg)));
+  };
+
+  const addConfirmElement = (idx: number) => {
+    const newEl: PageElement = {
+      id: `el-${Date.now()}`,
+      type: 'confirm',
+      x: 24,
+      y: 80,
+      width: 220,
+      height: 44,
+      zIndex: 2,
+      styles: { backgroundColor: '#8b5cf6', color: '#ffffff', borderRadius: 8, fontWeight: 600 },
+      confirm: { label: 'Confirmar asistencia' },
     };
     setPages((p) => p.map((pg, i) => (i === idx ? { ...pg, elements: [...(pg.elements || []), newEl] } : pg)));
   };
@@ -625,6 +641,7 @@ export default function InvitationEditorPage() {
                         <Button className="w-full sm:w-auto" variant="outline" onClick={() => addCountdownElement(selectedPage)}>Cronómetro</Button>
                         <Button className="w-full sm:w-auto" variant="outline" onClick={() => addAudioElement(selectedPage)}>Audio</Button>
                         <Button className="w-full sm:w-auto" variant="outline" onClick={() => addWhatsAppElement(selectedPage)}>WhatsApp</Button>
+                        <Button className="w-full sm:w-auto" variant="outline" onClick={() => addConfirmElement(selectedPage)}>Confirmación</Button>
                       </div>
                         </div>
                         <div className="space-y-3">
@@ -762,6 +779,21 @@ export default function InvitationEditorPage() {
                                   <input className="text-black border border-gray-300 rounded" type="number" value={el.height || 44} onChange={(e) => updateElement(selectedPage, el.id, { height: Number(e.target.value) })} />
                                   <label className="text-xs text-black">Color fondo</label>
                                   <input className="text-black border border-gray-300 rounded" type="color" value={(el.styles?.backgroundColor as string) || '#25D366'} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), backgroundColor: e.target.value } })} />
+                                  <label className="text-xs text-black">Color texto</label>
+                                  <input className="text-black border border-gray-300 rounded" type="color" value={(el.styles?.color as string) || '#ffffff'} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), color: e.target.value } })} />
+                                  <label className="text-xs text-black">Radio</label>
+                                  <input className="text-black border border-gray-300 rounded" type="number" value={(el.styles?.borderRadius as number) || 8} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), borderRadius: Number(e.target.value) } })} />
+                                </div>
+                              ) : el.type === 'confirm' ? (
+                                <div className="grid grid-cols-2 gap-2 mt-2">
+                                  <label className="text-xs text-black">Texto del botón</label>
+                                  <input className="text-black border border-gray-300 rounded" value={el.confirm?.label || ''} onChange={(e) => updateElement(selectedPage, el.id, { confirm: { ...(el.confirm || {}), label: e.target.value } })} />
+                                  <label className="text-xs text-black">Ancho</label>
+                                  <input className="text-black border border-gray-300 rounded" type="number" value={el.width || 220} onChange={(e) => updateElement(selectedPage, el.id, { width: Number(e.target.value) })} />
+                                  <label className="text-xs text-black">Alto</label>
+                                  <input className="text-black border border-gray-300 rounded" type="number" value={el.height || 44} onChange={(e) => updateElement(selectedPage, el.id, { height: Number(e.target.value) })} />
+                                  <label className="text-xs text-black">Color fondo</label>
+                                  <input className="text-black border border-gray-300 rounded" type="color" value={(el.styles?.backgroundColor as string) || '#8b5cf6'} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), backgroundColor: e.target.value } })} />
                                   <label className="text-xs text-black">Color texto</label>
                                   <input className="text-black border border-gray-300 rounded" type="color" value={(el.styles?.color as string) || '#ffffff'} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), color: e.target.value } })} />
                                   <label className="text-xs text-black">Radio</label>
@@ -947,6 +979,28 @@ export default function InvitationEditorPage() {
                         >
                           {label}
                         </a>
+                      );
+                    }
+                    if (el.type === 'confirm') {
+                      const label = el.confirm?.label || 'Confirmar asistencia';
+                      return (
+                        <div
+                          key={el.id}
+                          style={{
+                            ...style,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: el.width || 220,
+                            height: el.height || 44,
+                            backgroundColor: (el.styles?.backgroundColor as string) || '#8b5cf6',
+                            color: (el.styles?.color as string) || '#ffffff',
+                            borderRadius: (el.styles?.borderRadius as number) || 8,
+                            fontWeight: 600,
+                          }}
+                        >
+                          {label}
+                        </div>
                       );
                     }
                     return null;

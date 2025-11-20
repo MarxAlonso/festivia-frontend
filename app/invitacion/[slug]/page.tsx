@@ -10,7 +10,7 @@ import { invitationService } from "@/lib/invitations";
 type ColorKey = "primary" | "secondary" | "accent" | "text";
 type PageElement = {
   id: string;
-  type: "text" | "image" | "countdown" | "map" | "audio" | "whatsapp";
+  type: "text" | "image" | "countdown" | "map" | "audio" | "whatsapp" | "confirm";
   x: number;
   y: number;
   zIndex?: number;
@@ -24,6 +24,7 @@ type PageElement = {
   map?: { source: "event" | "custom"; query?: string; url?: string };
   audio?: { source: "file" | "youtube"; url?: string };
   whatsapp?: { phone?: string; message?: string; label?: string };
+  confirm?: { label?: string };
 };
 
 type EditableDesign = {
@@ -55,6 +56,10 @@ export default function PublicInvitationPage() {
   const [event, setEvent] = useState<EventInfo | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [containerSize, setContainerSize] = useState<{ w: number; h: number }>({ w: 360, h: 640 });
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmName, setConfirmName] = useState('');
+  const [confirmLastName, setConfirmLastName] = useState('');
+  const [savingConfirm, setSavingConfirm] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -305,6 +310,29 @@ export default function PublicInvitationPage() {
                                 </a>
                               );
                             }
+                            if (el.type === "confirm") {
+                              const label = el.confirm?.label || "Confirmar asistencia";
+                              return (
+                                <button
+                                  key={el.id}
+                                  onClick={() => setShowConfirmModal(true)}
+                                  style={{
+                                    ...baseStyle,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: el.width || 220,
+                                    height: el.height || 44,
+                                    backgroundColor: (el.styles?.backgroundColor as string) || '#8b5cf6',
+                                    color: (el.styles?.color as string) || '#ffffff',
+                                    borderRadius: (el.styles?.borderRadius as number) || 8,
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {label}
+                                </button>
+                              );
+                            }
                             return null;
                           })}
                           </div>
@@ -324,6 +352,75 @@ export default function PublicInvitationPage() {
           )}
         </div>
       </div>
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-celebrity-gray-900 mb-4">Ingresa tu nombre y apellido</h3>
+            <div className="space-y-3">
+              <input className="w-full px-3 py-2 border border-gray-300 rounded text-black" placeholder="Nombre" value={confirmName} onChange={(e) => setConfirmName(e.target.value)} />
+              <input className="w-full px-3 py-2 border border-gray-300 rounded text-black" placeholder="Apellido" value={confirmLastName} onChange={(e) => setConfirmLastName(e.target.value)} />
+            </div>
+            <div className="mt-4 flex justify-end gap-2">
+              <button className="px-3 py-2 border border-gray-300 rounded" onClick={() => setShowConfirmModal(false)}>Cancelar</button>
+              <button
+                className="px-3 py-2 rounded celebrity-gradient text-white"
+                disabled={savingConfirm}
+                onClick={async () => {
+                  try {
+                    setSavingConfirm(true);
+                    const payload = { name: confirmName.trim(), lastName: confirmLastName.trim() };
+                    const key = `celebria.confirmations.${slug}`;
+                    const existing = typeof window !== 'undefined' ? localStorage.getItem(key) : null;
+                    const arr = existing ? JSON.parse(existing) : [];
+                    arr.push({ ...payload, at: new Date().toISOString() });
+                    localStorage.setItem(key, JSON.stringify(arr));
+                    try {
+                      await invitationService.confirmPublicInvitation(slug, payload);
+                    } catch {}
+                    if (event?.eventDate && title) {
+                      const dt = new Date(event.eventDate);
+                      const dtEnd = new Date(dt.getTime() + 2 * 60 * 60 * 1000);
+                      const ics = [
+                        'BEGIN:VCALENDAR',
+                        'VERSION:2.0',
+                        'PRODID:-//CELEBRIA//ES',
+                        'BEGIN:VEVENT',
+                        `UID:${slug}-${Date.now()}`,
+                        `DTSTAMP:${dt.toISOString().replace(/[-:.]/g, '').slice(0, 15)}Z`,
+                        `DTSTART:${dt.toISOString().replace(/[-:.]/g, '').slice(0, 15)}Z`,
+                        `DTEND:${dtEnd.toISOString().replace(/[-:.]/g, '').slice(0, 15)}Z`,
+                        `SUMMARY:${title}`,
+                        event?.location ? `LOCATION:${event.location}` : '',
+                        'END:VEVENT',
+                        'END:VCALENDAR',
+                      ].filter(Boolean).join('\n');
+                      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `${title.replace(/\s+/g, '_')}.ics`;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                      URL.revokeObjectURL(url);
+                    }
+                    setShowConfirmModal(false);
+                    setConfirmName('');
+                    setConfirmLastName('');
+                    alert('Confirmación registrada');
+                  } catch (err) {
+                    alert('No se pudo confirmar');
+                  } finally {
+                    setSavingConfirm(false);
+                  }
+                }}
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -10,10 +10,9 @@ import {
   Settings, 
   LogOut,
   User,
-  Palette,
-  FileText,
-  Share2
+  Users
 } from 'lucide-react';
+//,FileText,Palette,
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
@@ -21,9 +20,9 @@ const menuItems = [
   { name: 'Dashboard', href: '/panel', icon: Grid3X3 },
   { name: 'Crear Invitación', href: '/panel/crear', icon: PlusCircle },
   { name: 'Mis Invitaciones', href: '/panel/invitaciones', icon: Sparkles },
-  { name: 'Mis Plantillas', href: '/panel/plantillas', icon: Palette },
-  { name: 'Mis Eventos', href: '/panel/eventos', icon: FileText },
-  { name: 'Compartir', href: '/panel/compartir', icon: Share2 },
+  /*{ name: 'Mis Plantillas', href: '/panel/plantillas', icon: Palette },*/
+  /*{ name: 'Mis Eventos', href: '/panel/eventos', icon: FileText },*/
+  { name: 'Confirmaciones', href: '/panel/confirmaciones', icon: Users },
   { name: 'Perfil', href: '/panel/perfil', icon: User },
   { name: 'Configuración', href: '/panel/configuracion', icon: Settings },
 ];
