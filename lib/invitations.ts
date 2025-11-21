@@ -163,6 +163,25 @@ export const invitationService = {
     return response.data;
   },
 
+  // Actualizar confirmación (organizer)
+  updateInvitationConfirmation: async (
+    id: string,
+    confirmationId: string,
+    data: { name?: string; lastName?: string },
+  ): Promise<{ id: string; name: string; lastName: string; createdAt: string }> => {
+    const response = await api.patch(`/invitations/${id}/confirmations/${confirmationId}`, data);
+    return response.data;
+  },
+
+  // Eliminar confirmación (organizer)
+  deleteInvitationConfirmation: async (
+    id: string,
+    confirmationId: string,
+  ): Promise<{ ok: boolean }> => {
+    const response = await api.delete(`/invitations/${id}/confirmations/${confirmationId}`);
+    return response.data;
+  },
+
   // Obtener estadísticas
   getInvitationStats: async (id: string): Promise<{
     views: number;

@@ -12,6 +12,9 @@ export default function ConfirmacionesPage() {
   const [selectedInvitationId, setSelectedInvitationId] = useState<string>('');
   const [confirmations, setConfirmations] = useState<Array<{ id: string; name: string; lastName: string; createdAt: string }>>([]);
   const [loading, setLoading] = useState(false);
+  const [editingId, setEditingId] = useState<string>('');
+  const [editName, setEditName] = useState<string>('');
+  const [editLastName, setEditLastName] = useState<string>('');
 
   useEffect(() => {
     const load = async () => {
@@ -84,9 +87,37 @@ export default function ConfirmacionesPage() {
               ) : (
                 <div className="space-y-2">
                   {confirmations.map((c) => (
-                    <div key={c.id} className="flex items-center justify-between border border-celebrity-gray-200 rounded px-3 py-2">
-                      <span className="text-sm text-black">{c.name} {c.lastName}</span>
-                      <span className="text-xs text-celebrity-gray-600">{new Date(c.createdAt).toLocaleString()}</span>
+                    <div key={c.id} className="flex items-center justify-between border border-celebrity-gray-200 rounded px-3 py-2 gap-3">
+                      {editingId === c.id ? (
+                        <>
+                          <input className="px-2 py-1 border border-gray-300 rounded text-black" value={editName} onChange={(e) => setEditName(e.target.value)} />
+                          <input className="px-2 py-1 border border-gray-300 rounded text-black" value={editLastName} onChange={(e) => setEditLastName(e.target.value)} />
+                          <div className="ml-auto flex items-center gap-2">
+                            <Button size="sm" variant="outline" onClick={() => { setEditingId(''); setEditName(''); setEditLastName(''); }}>Cancelar</Button>
+                            <Button size="sm" onClick={async () => {
+                              if (!selectedInvitationId) return;
+                              const res = await invitationService.updateInvitationConfirmation(selectedInvitationId, c.id, { name: editName.trim(), lastName: editLastName.trim() });
+                              setConfirmations((prev) => prev.map((x) => x.id === c.id ? res : x));
+                              setEditingId('');
+                              setEditName('');
+                              setEditLastName('');
+                            }}>Guardar</Button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-sm text-black">{c.name} {c.lastName}</span>
+                          <span className="text-xs text-celebrity-gray-600">{new Date(c.createdAt).toLocaleString()}</span>
+                          <div className="ml-auto flex items-center gap-2">
+                            <Button size="sm" variant="outline" onClick={() => { setEditingId(c.id); setEditName(c.name); setEditLastName(c.lastName); }}>Editar</Button>
+                            <Button size="sm" variant="outline" onClick={async () => {
+                              if (!selectedInvitationId) return;
+                              await invitationService.deleteInvitationConfirmation(selectedInvitationId, c.id);
+                              setConfirmations((prev) => prev.filter((x) => x.id !== c.id));
+                            }}>Eliminar</Button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   ))}
                 </div>
