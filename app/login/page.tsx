@@ -70,7 +70,7 @@ export default function LoginPage() {
                   <span className="text-white font-bold text-xl">C</span>
                 </div>
                 <span className="text-3xl font-bold font-serif bg-gradient-to-r from-celebrity-purple to-celebrity-pink bg-clip-text text-transparent">
-                  FESTIVIA
+                  CELEBRIA
                 </span>
               </div>
             </Link>
