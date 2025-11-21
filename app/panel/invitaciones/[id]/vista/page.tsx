@@ -175,14 +175,7 @@ export default function InvitationPreviewPage() {
                     const header = page.sections?.find((s) => s.key === 'header')?.text || '';
                     const body = page.sections?.find((s) => s.key === 'body')?.text || '';
                     const footer = page.sections?.find((s) => s.key === 'footer')?.text || '';
-                    // Componer detalles del evento para asegurar que aparecen en la vista
-                    const dateStr = event?.eventDate ? new Date(event.eventDate).toLocaleDateString() : '';
-                    const infoLineParts = [event?.title || '', dateStr, event?.location || ''].filter(Boolean);
-                    const infoLine = infoLineParts.join(' • ');
-                    const desc = event?.description || '';
-                    const details = [infoLine, desc].filter(Boolean).join('\n');
-                    const alreadyIncluded = body.includes(event?.title || '') || body.includes(dateStr) || body.includes(event?.location || '');
-                    const enhancedBody = idx === 0 ? (alreadyIncluded ? body : [body, details].filter(Boolean).join('\n\n')) : body;
+                    const enhancedBody = body;
                     const isCentered = designData?.layout === 'centered-header';
                     const isLandscape = ((page as any).orientation || 'portrait') === 'landscape';
                     const pageW = isLandscape ? 640 : 360;

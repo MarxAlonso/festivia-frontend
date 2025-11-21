@@ -97,53 +97,23 @@ export default function InvitationEditorPage() {
         const initialFonts = (inv.customDesign as any)?.fonts || tplFonts || { heading: 'serif', body: 'sans-serif' };
         setFonts(initialFonts);
 
-        // Inyectar detalles del evento al body si procede
-        const pagesWithEvent: DesignPage[] = (() => {
-        const base: DesignPage[] = (initialPages?.length ? initialPages : [
-  { background: { type: 'color' as BackgroundType, value: '#ffffff' }, sections: [], elements: [] },
-]).map((pg) => {
-  if (pg.background) {
-    const type: BackgroundType = pg.background.type === 'image' ? 'image' : 'color';
-    return {
-      ...pg,
-      background: {
-        type,
-        value: pg.background.value,
-      },
-    };
-  }
-  return pg;
-});
+        const normalizedPages: DesignPage[] = (initialPages?.length ? initialPages : [
+          { background: { type: 'color' as BackgroundType, value: '#ffffff' }, sections: [], elements: [] },
+        ]).map((pg) => {
+          if (pg.background) {
+            const type: BackgroundType = pg.background.type === 'image' ? 'image' : 'color';
+            return {
+              ...pg,
+              background: {
+                type,
+                value: pg.background.value,
+              },
+            };
+          }
+          return pg;
+        });
 
-  if (!ev) return base;
-
-  const dateStr = ev.eventDate ? new Date(ev.eventDate).toLocaleDateString() : '';
-  const infoLineParts = [ev.title || '', dateStr, ev.location || ''].filter(Boolean);
-  const infoLine = infoLineParts.join(' • ');
-  const desc = ev.description || '';
-  const details = [infoLine, desc].filter(Boolean).join('\n');
-
-  const pg0 = base[0] || { background: { type: 'color', value: '#ffffff' }, sections: [], elements: [] };
-  const bodySec = (pg0.sections || []).find((s) => s.key === 'body');
-  const bodyText = bodySec?.text || '';
-  const alreadyHasInfo = bodyText.includes(ev.title || '') || bodyText.includes(dateStr) || bodyText.includes(ev.location || '');
-  const newBody = alreadyHasInfo ? bodyText : [bodyText, details].filter(Boolean).join('\n\n');
-
-  const newSections = (() => {
-    const sections = pg0.sections || [];
-    const idx = sections.findIndex((s) => s.key === 'body');
-    if (idx >= 0) sections[idx] = { ...sections[idx], text: newBody };
-    else sections.push({ key: 'body', text: newBody });
-    return sections;
-  })();
-
-  const updatedPg0 = { ...pg0, sections: newSections };
-  const rest = base.slice(1);
-  return [updatedPg0, ...rest];
-})();
-
-
-        setPages(pagesWithEvent);
+        setPages(normalizedPages);
       } catch (err) {
         console.error('Error cargando editor de invitación:', err);
         const message = err instanceof Error ? err.message : 'Error cargando datos';

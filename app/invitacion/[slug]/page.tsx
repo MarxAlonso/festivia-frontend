@@ -154,12 +154,7 @@ export default function PublicInvitationPage() {
                 const header = page.sections?.find((s) => s.key === "header")?.text || "";
                 const body = page.sections?.find((s) => s.key === "body")?.text || "";
                 const footer = page.sections?.find((s) => s.key === "footer")?.text || "";
-                const dateStr = event?.eventDate ? new Date(event.eventDate).toLocaleDateString() : "";
-                const infoLineParts = [event?.title || "", dateStr, event?.location || ""].filter(Boolean);
-                const infoLine = infoLineParts.join(" • ");
-                const desc = event?.description || "";
-                const details = [infoLine, desc].filter(Boolean).join("\n");
-                const enhancedBody = idx === 0 ? [body, details].filter(Boolean).join("\n\n") : body;
+                const enhancedBody = body;
                 const isCentered = designData?.layout === "centered-header";
                 const isLandscape = ((page as any).orientation || 'portrait') === 'landscape';
                 const BASE_W = isLandscape ? 640 : 360;
