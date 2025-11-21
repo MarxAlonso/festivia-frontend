@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/Button';
-import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -196,6 +196,17 @@ export default function LoginPage() {
                   Regístrate aquí
                 </Link>
               </p>
+            </div>
+            <div className="text-center mt-4">
+              <Button
+                type="button"
+                size="lg"
+                className="w-full bg-white/30 backdrop-blur-md border border-celebrity-purple/40 text-celebrity-purple hover:bg-white/50 rounded-xl flex items-center justify-center gap-2 transition"
+                onClick={() => router.push('/')}
+              >
+                <ArrowLeft className="w-5 h-5" />
+                Volver al inicio
+              </Button>
             </div>
           </form>
         </div>

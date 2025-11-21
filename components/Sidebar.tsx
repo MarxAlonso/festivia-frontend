@@ -24,7 +24,7 @@ const menuItems = [
   /*{ name: 'Mis Eventos', href: '/panel/eventos', icon: FileText },*/
   { name: 'Confirmaciones', href: '/panel/confirmaciones', icon: Users },
   { name: 'Perfil', href: '/panel/perfil', icon: User },
-  { name: 'Configuración', href: '/panel/configuracion', icon: Settings },
+  /*{ name: 'Configuración', href: '/panel/configuracion', icon: Settings },*/
 ];
 
 export function Sidebar() {
