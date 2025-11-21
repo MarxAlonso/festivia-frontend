@@ -32,7 +32,7 @@ type PageElement = {
   map?: { source: 'event' | 'custom'; query?: string; url?: string };
   audio?: { source: 'file' | 'youtube'; url?: string };
   whatsapp?: { phone?: string; message?: string; label?: string };
-  confirm?: { label?: string };
+  confirm?: { label?: string; dateISO?: string; endDateISO?: string };
 };
 
 type DesignPage = {
@@ -257,7 +257,7 @@ export default function InvitationEditorPage() {
       height: 44,
       zIndex: 2,
       styles: { backgroundColor: '#8b5cf6', color: '#ffffff', borderRadius: 8, fontWeight: 600 },
-      confirm: { label: 'Confirmar asistencia' },
+      confirm: { label: 'Confirmar asistencia', dateISO: '', endDateISO: '' },
     };
     setPages((p) => p.map((pg, i) => (i === idx ? { ...pg, elements: [...(pg.elements || []), newEl] } : pg)));
   };
@@ -758,6 +758,29 @@ export default function InvitationEditorPage() {
                                 <div className="grid grid-cols-2 gap-2 mt-2">
                                   <label className="text-xs text-black">Texto del botón</label>
                                   <input className="text-black border border-gray-300 rounded" value={el.confirm?.label || ''} onChange={(e) => updateElement(selectedPage, el.id, { confirm: { ...(el.confirm || {}), label: e.target.value } })} />
+                                  <label className="text-xs text-black">Inicio (fecha y hora)</label>
+                                  <input
+                                    className="text-black border border-gray-300 rounded"
+                                    type="datetime-local"
+                                    value={(el.confirm?.dateISO || '').replace('Z','')}
+                                    onChange={(e) => {
+                                      const raw = e.target.value;
+                                      if (!raw) return;
+                                      const iso = new Date(raw).toISOString();
+                                      updateElement(selectedPage, el.id, { confirm: { ...(el.confirm || {}), dateISO: iso } });
+                                    }}
+                                  />
+                                  <label className="text-xs text-black">Fin (opcional)</label>
+                                  <input
+                                    className="text-black border border-gray-300 rounded"
+                                    type="datetime-local"
+                                    value={(el.confirm?.endDateISO || '').replace('Z','')}
+                                    onChange={(e) => {
+                                      const raw = e.target.value;
+                                      const iso = raw ? new Date(raw).toISOString() : '';
+                                      updateElement(selectedPage, el.id, { confirm: { ...(el.confirm || {}), endDateISO: iso } });
+                                    }}
+                                  />
                                   <label className="text-xs text-black">Ancho</label>
                                   <input className="text-black border border-gray-300 rounded" type="number" value={el.width || 220} onChange={(e) => updateElement(selectedPage, el.id, { width: Number(e.target.value) })} />
                                   <label className="text-xs text-black">Alto</label>

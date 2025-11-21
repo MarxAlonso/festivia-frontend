@@ -24,7 +24,7 @@ type PageElement = {
   map?: { source: "event" | "custom"; query?: string; url?: string };
   audio?: { source: "file" | "youtube"; url?: string };
   whatsapp?: { phone?: string; message?: string; label?: string };
-  confirm?: { label?: string };
+  confirm?: { label?: string; dateISO?: string; endDateISO?: string };
 };
 
 type EditableDesign = {
@@ -60,6 +60,7 @@ export default function PublicInvitationPage() {
   const [confirmName, setConfirmName] = useState('');
   const [confirmLastName, setConfirmLastName] = useState('');
   const [savingConfirm, setSavingConfirm] = useState(false);
+  const [activeConfirm, setActiveConfirm] = useState<{ label?: string; dateISO?: string; endDateISO?: string } | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -310,7 +311,10 @@ export default function PublicInvitationPage() {
                               return (
                                 <button
                                   key={el.id}
-                                  onClick={() => setShowConfirmModal(true)}
+                                  onClick={() => {
+                                    setActiveConfirm({ label, dateISO: el.confirm?.dateISO, endDateISO: el.confirm?.endDateISO });
+                                    setShowConfirmModal(true);
+                                  }}
                                   style={{
                                     ...baseStyle,
                                     display: 'inline-flex',
@@ -372,9 +376,11 @@ export default function PublicInvitationPage() {
                     try {
                       await invitationService.confirmPublicInvitation(slug, payload);
                     } catch {}
-                    if (event?.eventDate && title) {
-                      const dt = new Date(event.eventDate);
-                      const dtEnd = new Date(dt.getTime() + 2 * 60 * 60 * 1000);
+                    const startISO = activeConfirm?.dateISO || event?.eventDate || null;
+                    const endISO = activeConfirm?.endDateISO || null;
+                    if (startISO && title) {
+                      const dt = new Date(startISO);
+                      const dtEnd = endISO ? new Date(endISO) : new Date(dt.getTime() + 2 * 60 * 60 * 1000);
                       const ics = [
                         'BEGIN:VCALENDAR',
                         'VERSION:2.0',
