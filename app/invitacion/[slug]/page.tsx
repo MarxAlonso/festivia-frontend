@@ -379,17 +379,38 @@ export default function PublicInvitationPage() {
                     const startISO = activeConfirm?.dateISO || event?.eventDate || null;
                     const endISO = activeConfirm?.endDateISO || null;
                     if (startISO && title) {
-                      const dt = new Date(startISO);
-                      const dtEnd = endISO ? new Date(endISO) : new Date(dt.getTime() + 2 * 60 * 60 * 1000);
+                      const parseLocal = (v: string) => {
+                        const m = v.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
+                        if (m) {
+                          const y = Number(m[1]);
+                          const mo = Number(m[2]);
+                          const d = Number(m[3]);
+                          const h = Number(m[4]);
+                          const mi = Number(m[5]);
+                          return new Date(y, mo - 1, d, h, mi, 0, 0);
+                        }
+                        return new Date(v);
+                      };
+                      const dt = parseLocal(startISO);
+                      const dtEnd = endISO ? parseLocal(endISO) : new Date(dt.getTime() + 2 * 60 * 60 * 1000);
+                      const fmt = (d: Date) => {
+                        const y = d.getFullYear();
+                        const m = String(d.getMonth() + 1).padStart(2, '0');
+                        const da = String(d.getDate()).padStart(2, '0');
+                        const h = String(d.getHours()).padStart(2, '0');
+                        const mi = String(d.getMinutes()).padStart(2, '0');
+                        const s = String(d.getSeconds()).padStart(2, '0');
+                        return `${y}${m}${da}T${h}${mi}${s}`;
+                      };
                       const ics = [
                         'BEGIN:VCALENDAR',
                         'VERSION:2.0',
                         'PRODID:-//CELEBRIA//ES',
                         'BEGIN:VEVENT',
                         `UID:${slug}-${Date.now()}`,
-                        `DTSTAMP:${dt.toISOString().replace(/[-:.]/g, '').slice(0, 15)}Z`,
-                        `DTSTART:${dt.toISOString().replace(/[-:.]/g, '').slice(0, 15)}Z`,
-                        `DTEND:${dtEnd.toISOString().replace(/[-:.]/g, '').slice(0, 15)}Z`,
+                        `DTSTAMP:${fmt(new Date())}Z`,
+                        `DTSTART:${fmt(dt)}`,
+                        `DTEND:${fmt(dtEnd)}`,
                         `SUMMARY:${title}`,
                         event?.location ? `LOCATION:${event.location}` : '',
                         'END:VEVENT',

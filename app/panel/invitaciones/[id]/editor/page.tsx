@@ -758,27 +758,62 @@ export default function InvitationEditorPage() {
                                 <div className="grid grid-cols-2 gap-2 mt-2">
                                   <label className="text-xs text-black">Texto del botón</label>
                                   <input className="text-black border border-gray-300 rounded" value={el.confirm?.label || ''} onChange={(e) => updateElement(selectedPage, el.id, { confirm: { ...(el.confirm || {}), label: e.target.value } })} />
-                                  <label className="text-xs text-black">Inicio (fecha y hora)</label>
+                                  <label className="text-xs text-black">Fecha inicio</label>
                                   <input
                                     className="text-black border border-gray-300 rounded"
-                                    type="datetime-local"
-                                    value={(el.confirm?.dateISO || '').replace('Z','')}
+                                    type="date"
+                                    value={(el.confirm?.dateISO || '').split('T')[0] || ''}
                                     onChange={(e) => {
-                                      const raw = e.target.value;
-                                      if (!raw) return;
-                                      const iso = new Date(raw).toISOString();
-                                      updateElement(selectedPage, el.id, { confirm: { ...(el.confirm || {}), dateISO: iso } });
+                                      const d = e.target.value;
+                                      const t = (el.confirm?.dateISO || '').split('T')[1] || '00:00';
+                                      updateElement(selectedPage, el.id, { confirm: { ...(el.confirm || {}), dateISO: d ? `${d}T${t}` : '' } });
                                     }}
                                   />
+                                  <label className="text-xs text-black">Hora inicio</label>
+                                  <input
+                                    className="text-black border border-gray-300 rounded"
+                                    type="time"
+                                    step={60}
+                                    value={(() => { const v = el.confirm?.dateISO || ''; const p = v.split('T')[1] || ''; const [h,m] = p.split(':'); const hh = Number(h || '0'); const dh = ((hh % 12) || 12); return `${String(dh).padStart(2,'0')}:${m || '00'}`; })()}
+                                    onChange={(e) => {
+                                      const v = e.target.value;
+                                      const ampm = (() => { const h = Number(((el.confirm?.dateISO || '').split('T')[1] || '00:00').split(':')[0] || '0'); return h >= 12 ? 'PM' : 'AM'; })();
+                                      const [h,m] = v.split(':');
+                                      let hh = Number(h || '0');
+                                      if (ampm === 'PM' && hh < 12) hh += 12;
+                                      if (ampm === 'AM' && hh === 12) hh = 0;
+                                      const d = (el.confirm?.dateISO || '').split('T')[0] || '';
+                                      const t24 = `${String(hh).padStart(2,'0')}:${m || '00'}`;
+                                      updateElement(selectedPage, el.id, { confirm: { ...(el.confirm || {}), dateISO: d ? `${d}T${t24}` : t24 } });
+                                    }}
+                                  />
+                                  <label className="text-xs text-black">AM/PM</label>
+                                  <select
+                                    className="text-black border border-gray-300 rounded"
+                                    value={(() => { const p = (el.confirm?.dateISO || '').split('T')[1] || '00:00'; const h = Number(p.split(':')[0] || '0'); return h >= 12 ? 'PM' : 'AM'; })()}
+                                    onChange={(e) => {
+                                      const sel = e.target.value;
+                                      const d = (el.confirm?.dateISO || '').split('T')[0] || '';
+                                      const p = (el.confirm?.dateISO || '').split('T')[1] || '00:00';
+                                      let [h,m] = p.split(':');
+                                      let hh = Number(h || '0');
+                                      if (sel === 'PM' && hh < 12) hh += 12;
+                                      if (sel === 'AM' && hh >= 12) hh = hh - 12;
+                                      const t24 = `${String(hh).padStart(2,'0')}:${m || '00'}`;
+                                      updateElement(selectedPage, el.id, { confirm: { ...(el.confirm || {}), dateISO: d ? `${d}T${t24}` : t24 } });
+                                    }}
+                                  >
+                                    <option value="AM">AM</option>
+                                    <option value="PM">PM</option>
+                                  </select>
                                   <label className="text-xs text-black">Fin (opcional)</label>
                                   <input
                                     className="text-black border border-gray-300 rounded"
                                     type="datetime-local"
-                                    value={(el.confirm?.endDateISO || '').replace('Z','')}
+                                    value={el.confirm?.endDateISO || ''}
                                     onChange={(e) => {
                                       const raw = e.target.value;
-                                      const iso = raw ? new Date(raw).toISOString() : '';
-                                      updateElement(selectedPage, el.id, { confirm: { ...(el.confirm || {}), endDateISO: iso } });
+                                      updateElement(selectedPage, el.id, { confirm: { ...(el.confirm || {}), endDateISO: raw } });
                                     }}
                                   />
                                   <label className="text-xs text-black">Ancho</label>
@@ -791,6 +826,74 @@ export default function InvitationEditorPage() {
                                   <input className="text-black border border-gray-300 rounded" type="color" value={(el.styles?.color as string) || '#ffffff'} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), color: e.target.value } })} />
                                   <label className="text-xs text-black">Radio</label>
                                   <input className="text-black border border-gray-300 rounded" type="number" value={(el.styles?.borderRadius as number) || 8} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), borderRadius: Number(e.target.value) } })} />
+                                </div>
+                              ) : el.type === 'countdown' ? (
+                                <div className="grid grid-cols-2 gap-2 mt-2">
+                                  <label className="text-xs text-black">Fuente</label>
+                                  <select
+                                    className="text-black border border-gray-300 rounded"
+                                    value={el.countdown?.source || 'event'}
+                                    onChange={(e) => updateElement(selectedPage, el.id, { countdown: { ...(el.countdown || {}), source: e.target.value as 'event' | 'custom' } })}
+                                  >
+                                    <option value="event">Evento</option>
+                                    <option value="custom">Personalizada</option>
+                                  </select>
+                                  {(el.countdown?.source || 'event') === 'custom' && (
+                                    <>
+                                      <label className="text-xs text-black">Fecha</label>
+                                      <input
+                                        className="text-black border border-gray-300 rounded"
+                                        type="date"
+                                        value={(el.countdown?.dateISO || '').split('T')[0] || ''}
+                                        onChange={(e) => {
+                                          const d = e.target.value;
+                                          const t = (el.countdown?.dateISO || '').split('T')[1] || '00:00';
+                                          updateElement(selectedPage, el.id, { countdown: { ...(el.countdown || {}), dateISO: d ? `${d}T${t}` : '' } });
+                                        }}
+                                      />
+                                      <label className="text-xs text-black">Hora</label>
+                                      <input
+                                        className="text-black border border-gray-300 rounded"
+                                        type="time"
+                                        step={60}
+                                        value={(() => { const v = el.countdown?.dateISO || ''; const p = v.split('T')[1] || ''; const [h,m] = p.split(':'); const hh = Number(h || '0'); const dh = ((hh % 12) || 12); return `${String(dh).padStart(2,'0')}:${m || '00'}`; })()}
+                                        onChange={(e) => {
+                                          const v = e.target.value;
+                                          const ampm = (() => { const h = Number(((el.countdown?.dateISO || '').split('T')[1] || '00:00').split(':')[0] || '0'); return h >= 12 ? 'PM' : 'AM'; })();
+                                          const [h,m] = v.split(':');
+                                          let hh = Number(h || '0');
+                                          if (ampm === 'PM' && hh < 12) hh += 12;
+                                          if (ampm === 'AM' && hh === 12) hh = 0;
+                                          const d = (el.countdown?.dateISO || '').split('T')[0] || '';
+                                          const t24 = `${String(hh).padStart(2,'0')}:${m || '00'}`;
+                                          updateElement(selectedPage, el.id, { countdown: { ...(el.countdown || {}), dateISO: d ? `${d}T${t24}` : t24 } });
+                                        }}
+                                      />
+                                      <label className="text-xs text-black">AM/PM</label>
+                                      <select
+                                        className="text-black border border-gray-300 rounded"
+                                        value={(() => { const p = (el.countdown?.dateISO || '').split('T')[1] || '00:00'; const h = Number(p.split(':')[0] || '0'); return h >= 12 ? 'PM' : 'AM'; })()}
+                                        onChange={(e) => {
+                                          const sel = e.target.value;
+                                          const d = (el.countdown?.dateISO || '').split('T')[0] || '';
+                                          const p = (el.countdown?.dateISO || '').split('T')[1] || '00:00';
+                                          let [h,m] = p.split(':');
+                                          let hh = Number(h || '0');
+                                          if (sel === 'PM' && hh < 12) hh += 12;
+                                          if (sel === 'AM' && hh >= 12) hh = hh - 12;
+                                          const t24 = `${String(hh).padStart(2,'0')}:${m || '00'}`;
+                                          updateElement(selectedPage, el.id, { countdown: { ...(el.countdown || {}), dateISO: d ? `${d}T${t24}` : t24 } });
+                                        }}
+                                      >
+                                        <option value="AM">AM</option>
+                                        <option value="PM">PM</option>
+                                      </select>
+                                    </>
+                                  )}
+                                  <label className="text-xs text-black">Ancho</label>
+                                  <input className="text-black border border-gray-300 rounded" type="number" value={el.width || 300} onChange={(e) => updateElement(selectedPage, el.id, { width: Number(e.target.value) })} />
+                                  <label className="text-xs text-black">Alto</label>
+                                  <input className="text-black border border-gray-300 rounded" type="number" value={el.height || 60} onChange={(e) => updateElement(selectedPage, el.id, { height: Number(e.target.value) })} />
                                 </div>
                               ) : null}
                               <div className="grid grid-cols-2 gap-2 mt-2">

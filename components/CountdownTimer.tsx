@@ -13,16 +13,29 @@ function diffParts(target: Date) {
   return { days, hours, minutes, seconds };
 }
 
+function parseLocal(targetDate?: string | Date) {
+  if (typeof targetDate === 'string') {
+    const m = targetDate.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
+    if (m) {
+      const y = Number(m[1]);
+      const mo = Number(m[2]);
+      const d = Number(m[3]);
+      const h = Number(m[4]);
+      const mi = Number(m[5]);
+      return new Date(y, mo - 1, d, h, mi, 0, 0);
+    }
+    return new Date(targetDate);
+  }
+  return targetDate instanceof Date ? targetDate : new Date();
+}
+
 export function CountdownTimer({ targetDate, className, style }: { targetDate?: string | Date; className?: string; style?: React.CSSProperties }) {
-  const initial = React.useMemo(() => {
-    const d = typeof targetDate === 'string' ? new Date(targetDate) : targetDate instanceof Date ? targetDate : new Date();
-    return diffParts(d);
-  }, [targetDate]);
+  const initial = React.useMemo(() => diffParts(parseLocal(targetDate)), [targetDate]);
 
   const [parts, setParts] = React.useState(initial);
 
   React.useEffect(() => {
-    const target = typeof targetDate === 'string' ? new Date(targetDate) : targetDate instanceof Date ? targetDate : new Date();
+    const target = parseLocal(targetDate);
     const id = setInterval(() => {
       setParts(diffParts(target));
     }, 1000);
