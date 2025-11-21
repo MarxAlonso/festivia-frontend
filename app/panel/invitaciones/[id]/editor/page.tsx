@@ -827,6 +827,17 @@ export default function InvitationEditorPage() {
                                   <label className="text-xs text-black">Radio</label>
                                   <input className="text-black border border-gray-300 rounded" type="number" value={(el.styles?.borderRadius as number) || 8} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), borderRadius: Number(e.target.value) } })} />
                                 </div>
+                              ) : el.type === 'shape' ? (
+                                <div className="grid grid-cols-2 gap-2 mt-2">
+                                  <label className="text-xs text-black">Ancho</label>
+                                  <input className="text-black border border-gray-300 rounded" type="number" value={el.width || 200} onChange={(e) => updateElement(selectedPage, el.id, { width: Number(e.target.value) })} />
+                                  <label className="text-xs text-black">Alto</label>
+                                  <input className="text-black border border-gray-300 rounded" type="number" value={el.height || 100} onChange={(e) => updateElement(selectedPage, el.id, { height: Number(e.target.value) })} />
+                                  <label className="text-xs text-black">Color fondo</label>
+                                  <input className="text-black border border-gray-300 rounded" type="color" value={(el.styles?.backgroundColor as string) || '#ffffff'} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), backgroundColor: e.target.value } })} />
+                                  <label className="text-xs text-black">Radio</label>
+                                  <input className="text-black border border-gray-300 rounded" type="number" value={(el.styles?.borderRadius as number) || 0} onChange={(e) => updateElement(selectedPage, el.id, { styles: { ...(el.styles || {}), borderRadius: Number(e.target.value) } })} />
+                                </div>
                               ) : el.type === 'countdown' ? (
                                 <div className="grid grid-cols-2 gap-2 mt-2">
                                   <label className="text-xs text-black">Fuente</label>
