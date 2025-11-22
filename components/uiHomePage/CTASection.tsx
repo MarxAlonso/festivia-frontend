@@ -20,7 +20,7 @@ export const CTASection: React.FC = () => {
             </Link>
             <Link href="/visualizaciondeldesigndelainvitacion">
               <Button size="lg" variant="outline" className="bg-white/10 border-white text-white hover:bg-white hover:text-celebrity-purple">
-                Ver Ejemplos
+                Probar Celebria Plus
               </Button>
             </Link>
           </div>

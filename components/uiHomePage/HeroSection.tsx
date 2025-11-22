@@ -25,11 +25,6 @@ export const HeroSection: React.FC = () => {
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Link href="/templates">
-                <Button size="lg" variant="outline">
-                  Ver Plantillas
-                </Button>
-              </Link>
             </div>
           </div>
         </div>
